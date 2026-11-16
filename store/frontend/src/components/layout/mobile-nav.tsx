@@ -1,117 +1,89 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Menu, Wallet } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { Dialog } from "radix-ui";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { ResumeDownloadButton } from "@/features/wallet/components/resume-download-button";
-import { Link, usePathname } from "@/i18n/navigation";
-import { portfolioSections } from "@/config/site";
+import { shopNavItems, shopRoutes } from "@/config/shop";
+import { SearchInput } from "@/features/shop/components/search-input";
+import { useCategories } from "@/features/shop/hooks/use-shop-queries";
+import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./locale-switcher";
 import { ThemeToggle } from "./theme-toggle";
-/**
- * Mobile navigation. Opens from the bottom so it matches the wallet sheets and
- * keeps every target within thumb reach.
- */
+
+const linkClassName = "block rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-muted";
+
 export function MobileNav() {
-  const t = useTranslations("nav");
-  const tTheme = useTranslations("theme");
-  const tLanguage = useTranslations("language");
-  const tCommon = useTranslations("common");
-  const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-  const isHome = pathname === "/";
+  const t = useTranslations("shop.nav");
+  const { data: categories = [] } = useCategories();
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          className="size-11 lg:hidden"
-          aria-label={t("openMenu")}
-        >
-          <Menu />
-        </Button>
-      </SheetTrigger>
+      <Dialog.Root>
+        <Dialog.Trigger asChild>
+          <Button
+              variant="ghost"
+              size="icon-lg"
+              className="size-10 rounded-full lg:hidden"
+              aria-label={t("openMenu")}
+          >
+            <Menu />
+          </Button>
+        </Dialog.Trigger>
 
-      <SheetContent
-        onCloseAutoFocus={(e) => e.preventDefault()}
-        side="right"
-        closeLabel={tCommon("close")}
-        className="rounded-l-3xl border-t pb-[max(1rem,env(safe-area-inset-bottom))]"
-      >
-        <SheetHeader className="px-5 pt-5 text-start">
-          <SheetTitle>{t("menuTitle")}</SheetTitle>
-          <SheetDescription>{t("menuDescription")}</SheetDescription>
-        </SheetHeader>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
+          <Dialog.Content className="fixed inset-x-3 top-3 z-50 flex max-h-[calc(100dvh-1.5rem)] flex-col gap-4 overflow-y-auto rounded-3xl bg-popover p-5 text-popover-foreground shadow-[var(--elevation-elevated)] outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-top-4">
+            <div className="flex items-center justify-between">
+              <Dialog.Title className="font-display text-lg font-semibold">{t("menuTitle")}</Dialog.Title>
+              <Dialog.Close asChild>
+                <Button variant="ghost" size="icon-lg" aria-label={t("closeMenu")}>
+                  <X />
+                </Button>
+              </Dialog.Close>
+            </div>
+            <Dialog.Description className="sr-only">{t("menuDescription")}</Dialog.Description>
 
-        <nav className="grid grid-cols-2 gap-2 px-5" aria-label={t("menuTitle")}>
-          {portfolioSections.map((section) => (
-            <SheetClose key={section} asChild>
-              <Link
-                onClick={(e) => {
-                  if (isHome) {
-                    e.preventDefault();
+            <SearchInput className="md:hidden" />
 
-                    document.getElementById(section)?.scrollIntoView({
-                      behavior: "smooth",
-                      block: "start",
-                    });
+            <nav aria-label={t("mainNavigation")}>
+              <ul>
+                {shopNavItems.map((item) =>
+                    item.id === "categories" ? null : (
+                        <li key={item.id}>
+                          <Dialog.Close asChild>
+                            <Link href={item.href} className={linkClassName}>
+                              {t(item.id)}
+                            </Link>
+                          </Dialog.Close>
+                        </li>
+                    ),
+                )}
+              </ul>
 
-                    setOpen(false);
-                  }
-                }}
-                href={`/#${section}`}
-                className="flex min-h-12 items-center rounded-xl border border-border/70 bg-muted/40 px-4 text-sm font-medium text-muted-foreground transition-colors hover:border-brand/40 hover:text-foreground"
-              >
-                {t(section)}
-              </Link>
-            </SheetClose>
-          ))}
-        </nav>
+              {categories.length > 0 ? (
+                  <>
+                    <h3 className="mt-3 px-3 text-xs font-medium text-muted-foreground">{t("categories")}</h3>
+                    <ul className="mt-1">
+                      {categories.map((category) => (
+                          <li key={category.id}>
+                            <Dialog.Close asChild>
+                              <Link href={shopRoutes.category(category.slug)} className={linkClassName}>
+                                {category.name}
+                              </Link>
+                            </Dialog.Close>
+                          </li>
+                      ))}
+                    </ul>
+                  </>
+              ) : null}
+            </nav>
 
-        <Separator className="my-1" />
-
-        <div className="flex flex-col gap-2 px-5">
-          <SheetClose asChild>
-            <Button asChild size="xl" className="w-full">
-              <Link href="/wallet">
-                <Wallet data-icon="inline-start" />
-                {t("wallet")}
-              </Link>
-            </Button>
-          </SheetClose>
-          <ResumeDownloadButton
-            variant="outline"
-            size="xl"
-            className="w-full"
-            label={t("resume")}
-          />
-        </div>
-
-        <Separator className="my-1" />
-
-        <div className="flex items-center justify-between gap-3 px-5 pb-2">
-          <span className="text-xs font-medium text-muted-foreground">
-            {tTheme("label")} · {tLanguage("label")}
-          </span>
-          <div className="flex items-center gap-1">
-            <ThemeToggle />
-            <LocaleSwitcher />
-          </div>
-        </div>
-      </SheetContent>
-    </Sheet>
+            <div className="flex items-center gap-1 border-t border-border/70 pt-3 md:hidden">
+              <ThemeToggle />
+              <LocaleSwitcher />
+            </div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
   );
 }
