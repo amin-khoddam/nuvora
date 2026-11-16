@@ -1,0 +1,43 @@
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+
+# testing
+/coverage
+/test-results
+
+# nest.js
+/dist
+/build
+
+# logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# secrets and environment files
+.env
+.env.*
+!.env.example
+
+# misc
+.DS_Store
+Thumbs.db
+*.pem
+
+# editors
+.idea
+.vscode/*
+
+# typescript
+*.tsbuildinfo
+
+# temporary files
+tmp/
+temp/
