@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 /**
- * The single card primitive of the design system. Portfolio sections and the
+ * The single card primitive of the design system. shop sections and the
  * wallet share it so both halves of the product look like one thing.
  */
 const surfaceVariants = cva("rounded-2xl", {

@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { domAnimation, LazyMotion, MotionConfig } from "framer-motion";
 
 /**
- * Motion context for the portfolio page.
+ * Motion context for the shop page.
  *
  * `MotionConfig reducedMotion="user"` applies the visitor's preference: with
  * reduced motion the transform is skipped while opacity still resolves, so
