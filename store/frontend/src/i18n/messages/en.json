@@ -1,8 +1,8 @@
 {
   "metadata": {
     "home": {
-      "title": "Amin Khoddam — Frontend Developer",
-      "description": "Frontend developer with 3 years of experience building production React and Next.js interfaces, design systems and fintech-grade flows."
+      "title": "Nuvora — Modern Tech Store",
+      "description": "Shop the latest phones, laptops, audio, gaming and smart home tech at Nuvora."
     },
     "wallet": {
       "title": "Wallet",
@@ -317,5 +317,93 @@
     "title": "Something went wrong",
     "description": "An unexpected error occurred. You can try again.",
     "action": "Try again"
+  },
+  "shop": {
+    "pageTitle": "Nuvora — Modern Tech Store",
+    "viewAll": "View All",
+    "nav": {
+      "home": "Home",
+      "shop": "Shop",
+      "categories": "Categories",
+      "about": "About",
+      "contact": "Contact",
+      "account": "Account",
+      "cart": "Cart",
+      "mainNavigation": "Main navigation",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu",
+      "menuTitle": "Menu",
+      "menuDescription": "Browse the store, categories and settings."
+    },
+    "search": { "label": "Search products", "placeholder": "Search products..." },
+    "hero": { "region": "Featured promotions", "goToSlide": "Go to slide '{{'index'}}'" },
+    "sections": {
+      "categories": "Shop by Category",
+      "featured": "Featured Products",
+      "newArrivals": "New Arrivals",
+      "why": "Why Nuvora?"
+    },
+    "toolbar": {
+      "sort": "Sort",
+      "filter": "Category",
+      "currency": "Currency",
+      "allCategories": "All categories"
+    },
+    "sort": {
+      "featured": "Featured",
+      "newest": "Newest",
+      "priceAsc": "Price: low to high",
+      "priceDesc": "Price: high to low",
+      "rating": "Top rated"
+    },
+    "currency": { "USD": "USD — US Dollar", "EUR": "EUR — Euro", "GBP": "GBP — Pound Sterling" },
+    "product": {
+      "addToCart": "Add to cart",
+      "addToWishlist": "Add to wishlist",
+      "removeFromWishlist": "Remove from wishlist",
+      "ratingLabel": "Rated {rating} out of 5 from {count} reviews"
+    },
+    "promo": {
+      "badge": "Limited Time Offer",
+      "title": "Up to 50% OFF",
+      "subtitle": "On Selected Tech Products",
+      "cta": "Shop the Sale"
+    },
+    "why": {
+      "authentic": "100% Authentic Guaranteed",
+      "shipping": "Fast & Free Shipping",
+      "support": "24/7 Customer Support",
+      "returns": "Easy Returns"
+    },
+    "states": {
+      "loading": "Loading…",
+      "empty": "Nothing to show here yet.",
+      "errors": {
+        "network": "Can't reach the server. Check your connection and try again.",
+        "timeout": "The request took too long. Please try again.",
+        "server": "Something went wrong on our side. Please try again.",
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "footer": {
+      "tagline": "Smarter Tech. A Better Tomorrow.",
+      "copyright": "© {year} {name}. All rights reserved.",
+      "columns": { "shop": "Shop", "support": "Support", "about": "About" },
+      "links": {
+        "allProducts": "All Products",
+        "categories": "Categories",
+        "deals": "Deals",
+        "newArrivals": "New Arrivals",
+        "helpCenter": "Help Center",
+        "shippingInfo": "Shipping Info",
+        "returns": "Returns",
+        "contactUs": "Contact Us",
+        "ourStory": "Our Story",
+        "careers": "Careers",
+        "blog": "Blog",
+        "press": "Press"
+      },
+      "legal": { "privacy": "Privacy Policy", "terms": "Terms of Service", "cookies": "Cookie Settings" }
+    }
   }
 }
