@@ -24,6 +24,10 @@ const nextConfig: NextConfig = {
   output: process.env.VERCEL ? undefined : "standalone",
   poweredByHeader: false,
   reactStrictMode: true,
+  images: {
+    // Placeholder host for mock product images. Replace with the real CDN host.
+    remotePatterns: [{ protocol: "https", hostname: "placehold.co" }],
+  },
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
   },

@@ -6,11 +6,5 @@
  * to every route.
  */
 export const siteConfig = {
-  name: "Amin Khoddam",
+  name: "Nuvora",
 } as const;
-
-/**
- * Portfolio sections, in the order they appear on the page. The id doubles as
- * the anchor target and as the translation key under `nav`.
- */
-export const portfolioSections = ["about", "skills", "experience", "projects", "contact"] as const;
