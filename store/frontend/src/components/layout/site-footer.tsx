@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Brand } from "@/components/layout/brand";
 import { socialIcons } from "@/components/shared/social-icons";
-import { profile } from "@/config/profile";
+import { socials } from "@/config/socials";
 import { footerColumns, legalLinks } from "@/config/shop";
 import { siteConfig } from "@/config/site";
 import { Link } from "@/i18n/navigation";
@@ -22,7 +22,7 @@ export function SiteFooter() {
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-zinc-400">{t("tagline")}</p>
 
             <div className="mt-5 flex items-center gap-2">
-              {profile.socials.map(({ id, url }) => {
+              {socials.map(({ id, url }) => {
                 const Icon = socialIcons[id];
                 if (!Icon) return null;
 
