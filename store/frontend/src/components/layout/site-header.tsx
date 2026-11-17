@@ -5,6 +5,7 @@ import { ShoppingCart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { shopNavItems } from "@/config/shop";
 import { CategoriesMenu } from "@/features/shop/components/categories-menu";
+import { CurrencyMenu } from "@/features/shop/components/currency-menu";
 import { SearchInput } from "@/features/shop/components/search-input";
 import { selectCartCount, useShopStore } from "@/features/shop/store/shop-store";
 import { useScrolled } from "@/hooks/use-scrolled";
@@ -81,6 +82,7 @@ export function SiteHeader() {
               </div>
 
               <div className="hidden items-center gap-0.5 md:flex">
+                <CurrencyMenu />
                 <ThemeToggle />
                 <LocaleSwitcher />
               </div>

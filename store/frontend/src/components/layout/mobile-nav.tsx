@@ -5,6 +5,7 @@ import { Menu, X } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { Button } from "@/components/ui/button";
 import { shopNavItems, shopRoutes } from "@/config/shop";
+import { CurrencyMenu } from "@/features/shop/components/currency-menu";
 import { SearchInput } from "@/features/shop/components/search-input";
 import { useCategories } from "@/features/shop/hooks/use-shop-queries";
 import { Link } from "@/i18n/navigation";
@@ -79,6 +80,7 @@ export function MobileNav() {
             </nav>
 
             <div className="flex items-center gap-1 border-t border-border/70 pt-3 md:hidden">
+              <CurrencyMenu />
               <ThemeToggle />
               <LocaleSwitcher />
             </div>
