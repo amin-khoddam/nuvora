@@ -415,11 +415,13 @@
       "showImage": "Show image {index}",
       "specs": "Specifications",
       "related": "You May Also Like",
+      "removeFromCart": "Remove from cart",
       "stock": {
         "inStock": "In stock",
         "lowStock": "Only a few left",
         "outOfStock": "Out of stock"
       }
-    }
+    },
+    "carousel": { "previous": "Previous products", "next": "Next products" }
   }
 }

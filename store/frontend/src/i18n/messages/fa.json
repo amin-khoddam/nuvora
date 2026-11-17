@@ -412,11 +412,13 @@
       "showImage": "نمایش تصویر {index}",
       "specs": "مشخصات",
       "related": "ممکن است بپسندید",
+      "removeFromCart": "حذف از سبد خرید",
       "stock": {
         "inStock": "موجود",
         "lowStock": "تنها چند عدد باقی مانده",
         "outOfStock": "ناموجود"
       }
-    }
+    },
+    "carousel": { "previous": "محصولات قبلی", "next": "محصولات بعدی" }
   }
 }
