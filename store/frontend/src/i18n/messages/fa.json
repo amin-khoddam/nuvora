@@ -402,5 +402,21 @@
       },
       "legal": { "privacy": "حریم خصوصی", "terms": "شرایط استفاده", "cookies": "تنظیمات کوکی" }
     }
+  },
+  "detail": {
+    "breadcrumb": "مسیر صفحه",
+    "notFoundTitle": "محصول پیدا نشد",
+    "backToShop": "بازگشت به فروشگاه",
+    "quantity": "تعداد",
+    "increase": "افزایش تعداد",
+    "decrease": "کاهش تعداد",
+    "showImage": "نمایش تصویر {index}",
+    "specs": "مشخصات",
+    "related": "ممکن است بپسندید",
+    "stock": {
+      "inStock": "موجود",
+      "lowStock": "تنها چند عدد باقی مانده",
+      "outOfStock": "ناموجود"
+    }
   }
 }
