@@ -1,14 +1,13 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { useShallow } from "zustand/react/shallow";
 import { shopRoutes } from "@/config/shop";
-import { cn } from "@/lib/utils";
 import { useProducts } from "../hooks/use-shop-queries";
 import { useShopStore } from "../store/shop-store";
 import type { ProductCollection } from "../types";
-import { ProductCard, ProductCardSkeleton } from "./product-card";
+import { ProductCarousel } from "./product-carousel";
+import { ProductCardSkeleton } from "./product-card";
 import { EmptyState, QueryError } from "./query-feedback";
 import { SectionHeader } from "./section-header";
 
@@ -20,19 +19,6 @@ interface ProductSectionProps {
     showDiscountBadge?: boolean;
     /** Hides one product, e.g. the one whose detail page the section is shown on. */
     excludeId?: string;
-}
-
-function ProductGrid({ children, className }: { children: ReactNode; className?: string }) {
-    return (
-        <ul
-            className={cn(
-                "grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-4 transition-opacity",
-                className,
-            )}
-        >
-            {children}
-        </ul>
-    );
 }
 
 export function ProductSection({
@@ -63,13 +49,13 @@ export function ProductSection({
     let body;
     if (isPending) {
         body = (
-            <ProductGrid>
+            <ul className="grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-4">
                 {Array.from({ length: SKELETON_COUNT }, (_, index) => (
                     <li key={index}>
                         <ProductCardSkeleton />
                     </li>
                 ))}
-            </ProductGrid>
+            </ul>
         );
     } else if (isError) {
         body = <QueryError error={error} onRetry={() => void refetch()} />;
@@ -77,13 +63,11 @@ export function ProductSection({
         body = <EmptyState message={t("empty")} />;
     } else {
         body = (
-            <ProductGrid className={cn(isPlaceholderData && "opacity-60")}>
-                {visibleProducts.map((product) => (
-                    <li key={product.id}>
-                        <ProductCard product={product} showDiscountBadge={showDiscountBadge} />
-                    </li>
-                ))}
-            </ProductGrid>
+            <ProductCarousel
+                products={visibleProducts}
+                showDiscountBadge={showDiscountBadge}
+                isStale={isPlaceholderData}
+            />
         );
     }
 

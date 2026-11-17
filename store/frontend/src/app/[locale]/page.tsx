@@ -5,7 +5,6 @@ import { CategoryGrid } from "@/features/shop/components/category-grid";
 import { HeroSlider } from "@/features/shop/components/hero-slider";
 import { ProductSection } from "@/features/shop/components/product-section";
 import { PromoBanner } from "@/features/shop/components/promo-banner";
-import { ShopToolbar } from "@/features/shop/components/shop-toolbar";
 import { WhyNuvora } from "@/features/shop/components/why-nuvora";
 
 export default function HomePage() {
@@ -16,7 +15,6 @@ export default function HomePage() {
             <h1 className="sr-only">{t("pageTitle")}</h1>
             <div className="container-page flex flex-col gap-10 pt-4 sm:gap-12">
                 <HeroSlider />
-                <ShopToolbar />
                 <Reveal>
                     <CategoryGrid title={t("sections.categories")} />
                 </Reveal>
