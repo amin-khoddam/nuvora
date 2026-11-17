@@ -41,6 +41,22 @@ function list<T>(items: T[]): ApiListResponse<T> {
     return { data: items, meta: { total: items.length } };
 }
 
+/** Detail-only fields for products that have no hand-written entry in `mock-product-details`. */
+function buildFallbackDetails(product: Product): Omit<ProductDetail, keyof Product> {
+    return {
+        description: `${product.name} from our latest tech collection, with a 1-year warranty and free returns.`,
+        gallery: ["Front", "Side", "Back"].map(
+            (view) => `https://placehold.co/800x800/png?text=${encodeURIComponent(`${product.name} ${view}`)}`,
+        ),
+        highlights: ["1-year warranty", "Free shipping", "30-day returns"],
+        specs: [
+            { label: "Warranty", value: "1 year" },
+            { label: "Returns", value: "30 days" },
+        ],
+        stockStatus: "inStock",
+    };
+}
+
 export function getMockCategories(): ApiListResponse<Category> {
     return list(MOCK_CATEGORIES);
 }
@@ -66,9 +82,8 @@ const ALL_MOCK_PRODUCTS = Object.values(MOCK_PRODUCTS).flat();
 /** Throws the same `ApiError` a real 404 would produce after the response interceptor. */
 export function getMockProduct(slug: string, currency: CurrencyCode): ApiItemResponse<ProductDetail> {
     const product = ALL_MOCK_PRODUCTS.find((item) => item.slug === slug);
-    const extras = product ? MOCK_PRODUCT_DETAILS[product.id] : undefined;
+    if (!product) throw new ApiError("Product not found", "client", 404);
 
-    if (!product || !extras) throw new ApiError("Product not found", "client", 404);
-
+    const extras = MOCK_PRODUCT_DETAILS[product.id] ?? buildFallbackDetails(product);
     return { data: { ...localize(product, currency), ...extras } };
 }
