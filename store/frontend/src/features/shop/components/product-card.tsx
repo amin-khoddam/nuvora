@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import { Heart, ShoppingCart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Surface } from "@/components/ui/surface";
+import { shopRoutes } from "@/config/shop";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { formatCompactNumber, formatPrice } from "../lib/format";
 import { useShopStore } from "../store/shop-store";
@@ -44,14 +46,22 @@ export function ProductCard({ product, showDiscountBadge = false }: ProductCardP
             <div className="relative aspect-[4/3] w-full">
                 <Image
                     src={product.image}
-                    alt={product.name}
+                    alt=""
                     fill
                     sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                     className="object-contain p-3"
                 />
             </div>
 
-            <h3 className="mt-3 truncate font-sans text-sm font-medium">{product.name}</h3>
+            <h3 className="mt-3 truncate text-sm font-medium">
+                {/* Stretched link: the pseudo-element makes the whole card clickable while the buttons stay separate. */}
+                <Link
+                    href={shopRoutes.product(product.slug)}
+                    className="rounded-md outline-none after:absolute after:inset-0 after:rounded-2xl focus-visible:after:ring-3 focus-visible:after:ring-ring"
+                >
+                    {product.name}
+                </Link>
+            </h3>
 
             <div className="mt-1 flex items-end justify-between gap-2">
                 <div>
@@ -78,7 +88,7 @@ export function ProductCard({ product, showDiscountBadge = false }: ProductCardP
                 <Button
                     variant="secondary"
                     size="icon-sm"
-                    className="rounded-full"
+                    className="relative z-10 rounded-full"
                     aria-label={t("addToCart")}
                     onClick={() => addToCart(product.id)}
                 >

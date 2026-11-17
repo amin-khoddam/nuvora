@@ -18,6 +18,8 @@ interface ProductSectionProps {
     title: string;
     collection: ProductCollection;
     showDiscountBadge?: boolean;
+    /** Hides one product, e.g. the one whose detail page the section is shown on. */
+    excludeId?: string;
 }
 
 function ProductGrid({ children, className }: { children: ReactNode; className?: string }) {
@@ -33,7 +35,12 @@ function ProductGrid({ children, className }: { children: ReactNode; className?:
     );
 }
 
-export function ProductSection({ title, collection, showDiscountBadge = false }: ProductSectionProps) {
+export function ProductSection({
+                                   title,
+                                   collection,
+                                   showDiscountBadge = false,
+                                   excludeId,
+                               }: ProductSectionProps) {
     const t = useTranslations("shop.states");
     const { sort, categoryId, currency } = useShopStore(
         useShallow((state) => ({
@@ -51,6 +58,8 @@ export function ProductSection({ title, collection, showDiscountBadge = false }:
         isPlaceholderData,
     } = useProducts({ collection, sort, category: categoryId, currency });
 
+    const visibleProducts = excludeId ? products?.filter((product) => product.id !== excludeId) : products;
+
     let body;
     if (isPending) {
         body = (
@@ -64,12 +73,12 @@ export function ProductSection({ title, collection, showDiscountBadge = false }:
         );
     } else if (isError) {
         body = <QueryError error={error} onRetry={() => void refetch()} />;
-    } else if (!products || products.length === 0) {
+    } else if (!visibleProducts || visibleProducts.length === 0) {
         body = <EmptyState message={t("empty")} />;
     } else {
         body = (
             <ProductGrid className={cn(isPlaceholderData && "opacity-60")}>
-                {products.map((product) => (
+                {visibleProducts.map((product) => (
                     <li key={product.id}>
                         <ProductCard product={product} showDiscountBadge={showDiscountBadge} />
                     </li>
