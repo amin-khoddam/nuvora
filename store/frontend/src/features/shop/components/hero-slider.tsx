@@ -8,6 +8,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { useHeroSlides } from "../hooks/use-shop-queries";
 import { QueryError } from "./query-feedback";
@@ -17,7 +18,7 @@ export function HeroSlider() {
     const { data: slides, isPending, isError, error, refetch } = useHeroSlides();
 
     if (isPending) {
-        return <div aria-hidden className="h-80 animate-pulse rounded-3xl bg-muted" />;
+        return <Skeleton aria-hidden className="h-80 rounded-3xl" />;
     }
     if (isError) return <QueryError error={error} onRetry={() => void refetch()} />;
     if (slides.length === 0) return null;

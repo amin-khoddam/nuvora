@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Heart, ShoppingCart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Surface } from "@/components/ui/surface";
 import { shopRoutes } from "@/config/shop";
 import { Link } from "@/i18n/navigation";
@@ -100,5 +101,11 @@ export function ProductCard({ product, showDiscountBadge = false }: ProductCardP
 }
 
 export function ProductCardSkeleton() {
-    return <div aria-hidden className="h-64 animate-pulse rounded-2xl bg-muted" />;
+    return (
+        <Surface padding="sm" aria-hidden className="flex flex-col gap-3">
+            <Skeleton className="aspect-[4/3] w-full rounded-xl" />
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-5 w-1/2" />
+        </Surface>
+    );
 }

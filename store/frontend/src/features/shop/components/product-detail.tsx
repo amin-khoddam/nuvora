@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Check, ChevronRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Surface } from "@/components/ui/surface";
 import { shopRoutes } from "@/config/shop";
 import { Link } from "@/i18n/navigation";
@@ -53,12 +54,12 @@ function Breadcrumb({ name }: { name: string }) {
 function ProductDetailSkeleton() {
     return (
         <div aria-hidden className="grid gap-6 lg:grid-cols-2 lg:gap-10">
-            <div className="aspect-square animate-pulse rounded-2xl bg-muted" />
+            <Skeleton className="aspect-square rounded-2xl" />
             <div className="flex flex-col gap-4">
-                <div className="h-6 w-1/3 animate-pulse rounded-lg bg-muted" />
-                <div className="h-10 w-3/4 animate-pulse rounded-lg bg-muted" />
-                <div className="h-8 w-1/2 animate-pulse rounded-lg bg-muted" />
-                <div className="h-32 animate-pulse rounded-lg bg-muted" />
+                <Skeleton className="h-6 w-1/3" />
+                <Skeleton className="h-10 w-3/4" />
+                <Skeleton className="h-8 w-1/2" />
+                <Skeleton className="h-32" />
             </div>
         </div>
     );
@@ -148,7 +149,7 @@ export function ProductDetail({ slug }: { slug: string }) {
                         </ul>
                     ) : null}
 
-                    <ProductActions key={product.id} product={product} />
+                    <ProductActions product={product} />
                 </div>
             </div>
 

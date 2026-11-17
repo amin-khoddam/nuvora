@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Surface } from "@/components/ui/surface";
 import { shopRoutes } from "@/config/shop";
 import { Link } from "@/i18n/navigation";
@@ -22,7 +23,7 @@ export function CategoryGrid({ title }: { title: string }) {
             <ul className="flex gap-3" aria-hidden>
                 {Array.from({ length: SKELETON_COUNT }, (_, index) => (
                     <li key={index} className={itemClassName}>
-                        <div className="h-28 animate-pulse rounded-2xl bg-muted" />
+                        <Skeleton className="h-28 rounded-2xl" />
                     </li>
                 ))}
             </ul>
