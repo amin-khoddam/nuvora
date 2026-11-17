@@ -404,22 +404,22 @@
         "press": "Press"
       },
       "legal": { "privacy": "Privacy Policy", "terms": "Terms of Service", "cookies": "Cookie Settings" }
-    }
-  },
-  "detail": {
-    "breadcrumb": "Breadcrumb",
-    "notFoundTitle": "Product not found",
-    "backToShop": "Back to shop",
-    "quantity": "Quantity",
-    "increase": "Increase quantity",
-    "decrease": "Decrease quantity",
-    "showImage": "Show image {index}",
-    "specs": "Specifications",
-    "related": "You May Also Like",
-    "stock": {
-      "inStock": "In stock",
-      "lowStock": "Only a few left",
-      "outOfStock": "Out of stock"
+    },
+    "detail": {
+      "breadcrumb": "Breadcrumb",
+      "notFoundTitle": "Product not found",
+      "backToShop": "Back to shop",
+      "quantity": "Quantity",
+      "increase": "Increase quantity",
+      "decrease": "Decrease quantity",
+      "showImage": "Show image {index}",
+      "specs": "Specifications",
+      "related": "You May Also Like",
+      "stock": {
+        "inStock": "In stock",
+        "lowStock": "Only a few left",
+        "outOfStock": "Out of stock"
+      }
     }
   }
 }
