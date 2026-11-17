@@ -40,6 +40,22 @@ export interface Product {
     createdAt: string;
 }
 
+export type StockStatus = "inStock" | "lowStock" | "outOfStock";
+
+export interface ProductSpec {
+    label: string;
+    value: string;
+}
+
+export interface ProductDetail extends Product {
+    description: string;
+    /** Ordered image URLs; the first one is shown initially. */
+    gallery: string[];
+    highlights: string[];
+    specs: ProductSpec[];
+    stockStatus: StockStatus;
+}
+
 export interface HeroSlide {
     id: string;
     badge: string;
@@ -55,6 +71,10 @@ export interface HeroSlide {
 export interface ApiListResponse<T> {
     data: T[];
     meta: { total: number };
+}
+
+export interface ApiItemResponse<T> {
+    data: T;
 }
 
 export interface ProductsQuery {

@@ -18,7 +18,7 @@ export interface ShopState {
     setCategoryId: (categoryId: string | null) => void;
     setCurrency: (currency: CurrencyCode) => void;
     toggleWishlist: (productId: string) => void;
-    addToCart: (productId: string) => void;
+    addToCart: (productId: string, quantity?: number) => void;
 }
 
 export const useShopStore = create<ShopState>()((set) => ({
@@ -36,8 +36,8 @@ export const useShopStore = create<ShopState>()((set) => ({
                 ? state.wishlist.filter((id) => id !== productId)
                 : [...state.wishlist, productId],
         })),
-    addToCart: (productId) =>
-        set((state) => ({ cart: { ...state.cart, [productId]: (state.cart[productId] ?? 0) + 1 } })),
+    addToCart: (productId, quantity = 1) =>
+        set((state) => ({ cart: { ...state.cart, [productId]: (state.cart[productId] ?? 0) + quantity } })),
 }));
 
 export const selectCartCount = (state: ShopState) =>

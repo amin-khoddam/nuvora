@@ -55,10 +55,16 @@ export function shouldRetryRequest(failureCount: number, error: unknown): boolea
     return failureCount < MAX_RETRIES && RETRYABLE_KINDS.includes(toApiError(error).kind);
 }
 
-export type ErrorMessageKey = "network" | "timeout" | "server" | "generic";
+export function isNotFoundError(error: unknown): boolean {
+    return toApiError(error).status === 404;
+}
+
+export type ErrorMessageKey = "network" | "timeout" | "server" | "notFound" | "generic";
 
 /** Maps an error to a translation key under `shop.states.errors`. */
 export function getErrorMessageKey(error: unknown): ErrorMessageKey {
+    if (isNotFoundError(error)) return "notFound";
+
     const { kind } = toApiError(error);
     return kind === "network" || kind === "timeout" || kind === "server" ? kind : "generic";
 }

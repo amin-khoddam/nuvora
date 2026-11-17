@@ -1,12 +1,22 @@
 import { apiConfig } from "@/config/api";
 import { apiClient } from "@/lib/api/client";
-import { getMockCategories, getMockHeroSlides, getMockProducts } from "./mock-handlers";
-import type { ApiListResponse, Category, HeroSlide, Product, ProductsQuery } from "../types";
+import { getMockCategories, getMockHeroSlides, getMockProduct, getMockProducts } from "./mock-handlers";
+import type {
+    ApiItemResponse,
+    ApiListResponse,
+    Category,
+    CurrencyCode,
+    HeroSlide,
+    Product,
+    ProductDetail,
+    ProductsQuery,
+} from "../types";
 
 const ENDPOINTS = {
     categories: "/shop/categories",
     heroSlides: "/shop/hero-slides",
     products: "/shop/products",
+    product: (slug: string) => `/shop/products/${encodeURIComponent(slug)}`,
 } as const;
 
 /** Endpoint that exists on the fake API used while mocking. */
@@ -42,6 +52,12 @@ export const shopService = {
     getProducts: (query: ProductsQuery, signal?: AbortSignal) =>
         request<ApiListResponse<Product>>(ENDPOINTS.products, () => getMockProducts(query), {
             params: query,
+            signal,
+        }),
+
+    getProduct: (slug: string, currency: CurrencyCode, signal?: AbortSignal) =>
+        request<ApiItemResponse<ProductDetail>>(ENDPOINTS.product(slug), () => getMockProduct(slug, currency), {
+            params: { currency },
             signal,
         }),
 };

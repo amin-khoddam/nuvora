@@ -1,10 +1,14 @@
+import { ApiError } from "@/lib/api/errors";
 import { MOCK_CATEGORIES, MOCK_HERO_SLIDES, MOCK_PRODUCTS } from "./mock-data";
+import { MOCK_PRODUCT_DETAILS } from "./mock-product-details";
 import type {
+    ApiItemResponse,
     ApiListResponse,
     Category,
     CurrencyCode,
     HeroSlide,
     Product,
+    ProductDetail,
     ProductSort,
     ProductsQuery,
 } from "../types";
@@ -22,6 +26,15 @@ const COMPARATORS: Record<ProductSort, (a: Product, b: Product) => number> = {
 
 function convert(usdAmount: number, currency: CurrencyCode): number {
     return Math.round(usdAmount * EXCHANGE_RATES[currency] * 100) / 100;
+}
+
+function localize(product: Product, currency: CurrencyCode): Product {
+    return {
+        ...product,
+        currency,
+        price: convert(product.price, currency),
+        compareAtPrice: product.compareAtPrice === null ? null : convert(product.compareAtPrice, currency),
+    };
 }
 
 function list<T>(items: T[]): ApiListResponse<T> {
@@ -42,13 +55,20 @@ export function getMockProducts(query: ProductsQuery): ApiListResponse<Product> 
     const matches = MOCK_PRODUCTS[collection]
         .filter((product) => category === null || product.categoryId === category)
         .sort(COMPARATORS[sort])
-        .map((product) => ({
-            ...product,
-            currency,
-            price: convert(product.price, currency),
-            compareAtPrice: product.compareAtPrice === null ? null : convert(product.compareAtPrice, currency),
-        }));
+        .map((product) => localize(product, currency));
 
     const total = matches.length;
     return { data: limit ? matches.slice(0, limit) : matches, meta: { total } };
+}
+
+const ALL_MOCK_PRODUCTS = Object.values(MOCK_PRODUCTS).flat();
+
+/** Throws the same `ApiError` a real 404 would produce after the response interceptor. */
+export function getMockProduct(slug: string, currency: CurrencyCode): ApiItemResponse<ProductDetail> {
+    const product = ALL_MOCK_PRODUCTS.find((item) => item.slug === slug);
+    const extras = product ? MOCK_PRODUCT_DETAILS[product.id] : undefined;
+
+    if (!product || !extras) throw new ApiError("Product not found", "client", 404);
+
+    return { data: { ...localize(product, currency), ...extras } };
 }

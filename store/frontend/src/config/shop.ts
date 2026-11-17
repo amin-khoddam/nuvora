@@ -6,6 +6,7 @@ export const shopRoutes = {
     categories: "/categories",
     category: (slug: string) => `/shop?category=${encodeURIComponent(slug)}`,
     collection: (collection: ProductCollection) => `/shop?collection=${collection}`,
+    product: (slug: string) => `/products/${encodeURIComponent(slug)}`,
 } as const;
 
 type ShopNavItem =
