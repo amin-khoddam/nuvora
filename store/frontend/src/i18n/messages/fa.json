@@ -330,7 +330,9 @@
       "openMenu": "باز کردن منو",
       "closeMenu": "بستن منو",
       "menuTitle": "منو",
-      "menuDescription": "فروشگاه، دسته‌بندی‌ها و تنظیمات را مرور کنید."
+      "menuDescription": "فروشگاه، دسته‌بندی‌ها و تنظیمات را مرور کنید.",
+      "bottomNavigation": "ناوبری سریع",
+      "categoriesDescription": "مرور همه‌ی دسته‌بندی‌های محصولات."
     },
     "search": { "label": "جستجوی محصولات", "placeholder": "جستجوی محصولات..." },
     "hero": { "region": "پیشنهادهای ویژه", "goToSlide": "رفتن به اسلاید '{{'index'}}'" },

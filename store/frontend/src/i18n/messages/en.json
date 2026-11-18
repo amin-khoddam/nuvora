@@ -333,7 +333,9 @@
       "openMenu": "Open menu",
       "closeMenu": "Close menu",
       "menuTitle": "Menu",
-      "menuDescription": "Browse the store, categories and settings."
+      "menuDescription": "Browse the store, categories and settings.",
+      "bottomNavigation": "Quick navigation",
+      "categoriesDescription": "Browse all product categories."
     },
     "search": { "label": "Search products", "placeholder": "Search products..." },
     "hero": { "region": "Featured promotions", "goToSlide": "Go to slide '{{'index'}}'" },

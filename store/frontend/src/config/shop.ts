@@ -9,19 +9,6 @@ export const shopRoutes = {
     product: (slug: string) => `/products/${encodeURIComponent(slug)}`,
 } as const;
 
-type ShopNavItem =
-    | { id: "home" | "shop" | "about" | "contact"; href: string }
-    | { id: "categories"; href?: undefined };
-
-/** Header order. `categories` renders as a dropdown, the rest are plain links. */
-export const shopNavItems = [
-    { id: "home", href: shopRoutes.home },
-    { id: "shop", href: shopRoutes.shop },
-    { id: "categories" },
-    { id: "about", href: "/about" },
-    { id: "contact", href: "/contact" },
-] as const satisfies readonly ShopNavItem[];
-
 export const promoBanner = {
     image: "https://placehold.co/900x520/png?text=MacBook+Air",
     href: shopRoutes.shop,

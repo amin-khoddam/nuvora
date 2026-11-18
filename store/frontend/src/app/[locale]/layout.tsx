@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { Inter, Sora, Vazirmatn } from "next/font/google";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { AppProviders } from "@/app/providers";
+import { BottomNav } from "@/components/layout/bottom-nav";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SkipToContent } from "@/components/layout/skip-to-content";
@@ -27,6 +28,11 @@ const vazirmatn = Vazirmatn({
   variable: "--font-vazirmatn",
   display: "swap",
 });
+
+/** `cover` lets the fixed bottom bar respect the device safe area via `env(safe-area-inset-bottom)`. */
+export const viewport: Viewport = {
+  viewportFit: "cover",
+};
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -70,17 +76,17 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   const activeLocale = locale as AppLocale;
   // Only ship the font family the active locale actually renders with.
   const fontVariables =
-    activeLocale === "fa"
-      ? `${vazirmatn.variable} ${inter.variable}`
-      : `${inter.variable} ${sora.variable} ${vazirmatn.variable}`;
+      activeLocale === "fa"
+          ? `${vazirmatn.variable} ${inter.variable}`
+          : `${inter.variable} ${sora.variable} ${vazirmatn.variable}`;
 
   return (
-    <html
-      lang={activeLocale}
-      dir={getDirection(activeLocale)}
-      className={fontVariables}
-      suppressHydrationWarning
-    >
+      <html
+          lang={activeLocale}
+          dir={getDirection(activeLocale)}
+          className={fontVariables}
+          suppressHydrationWarning
+      >
       <head>
         {/* Reveal animations set an initial opacity of 0; without JavaScript
             the content must still be visible. */}
@@ -88,22 +94,25 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           <style>{"[data-reveal]{opacity:1!important;transform:none!important}"}</style>
         </noscript>
       </head>
-      <body className="flex min-h-dvh flex-col">
-        <AppProviders>
-          <NextIntlClientProvider>
-            <div className="ambient-backdrop" aria-hidden />
-            <div className="ambient-grid" aria-hidden />
-            <div className="ambient-noise" aria-hidden />
-            <SkipToContent />
-            <SiteHeader />
-            <main id="main-content" className="flex-1">
-              {children}
-            </main>
-            <SiteFooter />
-            <Toaster />
-          </NextIntlClientProvider>
-        </AppProviders>
+      {/* Bottom padding = BottomNav height (4rem) + safe area, below `lg` only.
+          `overflow-x-clip` is a safety net; unlike `hidden` it keeps `sticky` working. */}
+      <body className="flex min-h-dvh flex-col overflow-x-clip pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0">
+      <AppProviders>
+        <NextIntlClientProvider>
+          <div className="ambient-backdrop" aria-hidden />
+          <div className="ambient-grid" aria-hidden />
+          <div className="ambient-noise" aria-hidden />
+          <SkipToContent />
+          <SiteHeader />
+          <main id="main-content" className="flex-1">
+            {children}
+          </main>
+          <SiteFooter />
+          <BottomNav />
+          <Toaster />
+        </NextIntlClientProvider>
+      </AppProviders>
       </body>
-    </html>
+      </html>
   );
 }

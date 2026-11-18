@@ -14,7 +14,12 @@ import {
 import { useShopStore } from "../store/shop-store";
 import { CURRENCIES, isCurrencyCode } from "../types";
 
-export function CurrencyMenu() {
+interface CurrencyMenuProps {
+    /** Round icon-sized trigger showing only the code; used in the bottom bar. */
+    compact?: boolean;
+}
+
+export function CurrencyMenu({ compact = false }: CurrencyMenuProps) {
     const t = useTranslations("shop");
     const currency = useShopStore((state) => state.currency);
     const setCurrency = useShopStore((state) => state.setCurrency);
@@ -22,19 +27,30 @@ export function CurrencyMenu() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-9 gap-1.5 rounded-full px-3 text-muted-foreground hover:text-foreground"
-                    aria-label={`${t("toolbar.currency")}: ${currency}`}
-                >
-                    <Coins aria-hidden />
-                    <span className="tabular-amount">{currency}</span>
-                    <ChevronDown aria-hidden />
-                </Button>
+                {compact ? (
+                    <Button
+                        variant="ghost"
+                        size="icon-lg"
+                        className="size-10 rounded-full text-xs font-semibold"
+                        aria-label={`${t("toolbar.currency")}: ${currency}`}
+                    >
+                        <span className="tabular-amount">{currency}</span>
+                    </Button>
+                ) : (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-9 gap-1.5 rounded-full px-3 text-muted-foreground hover:text-foreground"
+                        aria-label={`${t("toolbar.currency")}: ${currency}`}
+                    >
+                        <Coins aria-hidden />
+                        <span className="tabular-amount">{currency}</span>
+                        <ChevronDown aria-hidden />
+                    </Button>
+                )}
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align={compact ? "center" : "end"}>
                 <DropdownMenuLabel>{t("toolbar.currency")}</DropdownMenuLabel>
                 <DropdownMenuRadioGroup
                     value={currency}
