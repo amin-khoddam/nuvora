@@ -23,9 +23,10 @@ export function ProductGallery({ images, alt }: ProductGalleryProps) {
     if (images.length === 0) return null;
 
     return (
-        <div className="flex flex-col gap-3">
-            <Surface padding="none" className="overflow-hidden">
+        <div className="flex min-w-0 w-full flex-col gap-3">
+            <Surface padding="none" className="min-w-0 w-full overflow-hidden sm:max-w-[500px]">
                 <Swiper
+                    className="w-full min-w-0"
                     modules={[A11y, Keyboard]}
                     keyboard
                     onSwiper={setSwiper}
