@@ -10,6 +10,9 @@ import "swiper/css";
 import { Surface } from "@/components/ui/surface";
 import { cn } from "@/lib/utils";
 
+/** Shared by the gallery, its thumbnails and the loading skeleton so they always line up. */
+export const GALLERY_MAX_WIDTH_CLASS = "sm:max-w-[500px]";
+
 interface ProductGalleryProps {
     images: string[];
     alt: string;
@@ -23,10 +26,9 @@ export function ProductGallery({ images, alt }: ProductGalleryProps) {
     if (images.length === 0) return null;
 
     return (
-        <div className="flex min-w-0 w-full flex-col gap-3">
-            <Surface padding="none" className="min-w-0 w-full overflow-hidden sm:max-w-[500px]">
+        <div className="flex flex-col gap-3">
+            <Surface padding="none" className={cn("overflow-hidden", GALLERY_MAX_WIDTH_CLASS)}>
                 <Swiper
-                    className="w-full min-w-0"
                     modules={[A11y, Keyboard]}
                     keyboard
                     onSwiper={setSwiper}
@@ -40,7 +42,7 @@ export function ProductGallery({ images, alt }: ProductGalleryProps) {
                                     alt={index === 0 ? alt : `${alt} (${index + 1})`}
                                     fill
                                     priority={index === 0}
-                                    sizes="(min-width: 1024px) 40vw, 100vw"
+                                    sizes="(min-width: 1024px) 40vw, (min-width: 640px) 500px, 100vw"
                                     className="object-contain p-6"
                                 />
                             </div>
@@ -50,7 +52,7 @@ export function ProductGallery({ images, alt }: ProductGalleryProps) {
             </Surface>
 
             {images.length > 1 ? (
-                <ul className="flex gap-2 overflow-x-auto pb-1">
+                <ul className={cn("flex gap-2 overflow-x-auto pb-1", GALLERY_MAX_WIDTH_CLASS)}>
                     {images.map((image, index) => {
                         const isActive = index === activeIndex;
 

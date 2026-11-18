@@ -14,7 +14,7 @@ import { useCategories, useProduct } from "../hooks/use-shop-queries";
 import { useShopStore } from "../store/shop-store";
 import type { StockStatus } from "../types";
 import { ProductActions } from "./product-actions";
-import { ProductGallery } from "./product-gallery";
+import { GALLERY_MAX_WIDTH_CLASS, ProductGallery } from "./product-gallery";
 import { ProductSection } from "./product-section";
 import { ProductSpecs } from "./product-specs";
 import { QueryError } from "./query-feedback";
@@ -54,7 +54,14 @@ function Breadcrumb({ name }: { name: string }) {
 function ProductDetailSkeleton() {
     return (
         <div aria-hidden className="grid gap-6 lg:grid-cols-2 lg:gap-10">
-            <Skeleton className="aspect-square rounded-2xl sm:max-w-[500px]" />
+            <div className="flex flex-col gap-3">
+                <Skeleton className={cn("aspect-square rounded-2xl", GALLERY_MAX_WIDTH_CLASS)} />
+                <div className={cn("flex gap-2", GALLERY_MAX_WIDTH_CLASS)}>
+                    {Array.from({ length: 4 }, (_, index) => (
+                        <Skeleton key={index} className="size-16 shrink-0 rounded-xl sm:size-20" />
+                    ))}
+                </div>
+            </div>
             <div className="flex flex-col gap-4">
                 <Skeleton className="h-6 w-1/3" />
                 <Skeleton className="h-10 w-3/4" />
