@@ -45,9 +45,9 @@ function CategorySlider({ categories }: { categories: Category[] }) {
                             className="group block h-full rounded-2xl outline-none focus-visible:ring-3 focus-visible:ring-ring"
                         >
                             <Surface padding="none" interactive className="flex h-full flex-col items-center gap-2 p-3">
-                <span className="relative size-16">
-                  <Image src={category.image} alt="" fill sizes="64px" className="object-contain" />
-                </span>
+                                <span className="relative size-16">
+                                  {category.image ? <Image src={category.image} alt="" fill sizes="64px" className="object-contain" /> : null}
+                                </span>
                                 <span className="text-center text-sm font-medium">{category.name}</span>
                             </Surface>
                         </Link>

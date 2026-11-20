@@ -1,75 +1,37 @@
 "use client";
 
-import Image from "next/image";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronRight, LayoutGrid, X } from "lucide-react";
+import { ArrowLeft, LayoutGrid, X } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { shopRoutes } from "@/config/shop";
-import { Link } from "@/i18n/navigation";
+import { useCategoryNavigation } from "../hooks/use-category-navigation";
 import { useCategories } from "../hooks/use-shop-queries";
-import { EmptyState, QueryError } from "./query-feedback";
+import type { Category } from "../types";
+import { CategoryPanel } from "./category-panel";
+import { CategoryQueryState } from "./category-query-state";
 
-const SKELETON_COUNT = 6;
+const NO_CATEGORIES: Category[] = [];
 
-/**
- * Full-screen category page for mobile. For ,now it is a flat list; the
- * recursive Category Explorer (mega menu task) will replace the body.
- */
+/** Full-screen, click-based explorer with Back, Close and breadcrumbs; depth is unlimited. */
 export function CategoriesSheet() {
     const t = useTranslations("shop");
+    const tMenu = useTranslations("shop.categoryMenu");
     const tCommon = useTranslations("common");
-    const { data: categories, isPending, isError, error, refetch } = useCategories();
+    const [open, setOpen] = useState(false);
+    const { data: roots = NO_CATEGORIES, isPending, isError, error, refetch } = useCategories();
+    const { path, drill, popTo, reset } = useCategoryNavigation(roots);
 
-    let body;
-    if (isPending) {
-        body = (
-            <ul aria-hidden className="flex flex-col gap-2 p-3">
-                {Array.from({ length: SKELETON_COUNT }, (_, index) => (
-                    <li key={index}>
-                        <Skeleton className="h-18 rounded-2xl" />
-                    </li>
-                ))}
-            </ul>
-        );
-    } else if (isError) {
-        body = (
-            <div className="p-3">
-                <QueryError error={error} onRetry={() => void refetch()} />
-            </div>
-        );
-    } else if (categories.length === 0) {
-        body = (
-            <div className="p-3">
-                <EmptyState message={t("states.empty")} />
-            </div>
-        );
-    } else {
-        body = (
-            <ul className="flex flex-col gap-1 p-3">
-                {categories.map((category) => (
-                    <li key={category.id}>
-                        <Dialog.Close asChild>
-                            <Link
-                                href={shopRoutes.category(category.slug)}
-                                className="flex items-center gap-3 rounded-2xl p-3 outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring"
-                            >
-                <span className="relative size-12 shrink-0">
-                  <Image src={category.image} alt="" fill sizes="48px" className="object-contain" />
-                </span>
-                                <span className="flex-1 text-base font-medium">{category.name}</span>
-                                <ChevronRight className="size-5 text-muted-foreground rtl:-scale-x-100" aria-hidden />
-                            </Link>
-                        </Dialog.Close>
-                    </li>
-                ))}
-            </ul>
-        );
+    const isReady = !isPending && !isError && roots.length > 0;
+    const current = path.at(-1);
+
+    function handleOpenChange(next: boolean) {
+        setOpen(next);
+        if (!next) reset();
     }
 
     return (
-        <Dialog.Root>
+        <Dialog.Root open={open} onOpenChange={handleOpenChange}>
             <Dialog.Trigger asChild>
                 <Button variant="ghost" size="icon-lg" className="size-10 rounded-full" aria-label={t("nav.categories")}>
                     <LayoutGrid />
@@ -78,8 +40,21 @@ export function CategoriesSheet() {
 
             <Dialog.Portal>
                 <Dialog.Content className="fixed inset-0 z-50 flex flex-col bg-background pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-bottom-4">
-                    <div className="flex items-center justify-between border-b border-border/70 px-4 py-3">
-                        <Dialog.Title className="font-display text-lg font-semibold">{t("nav.categories")}</Dialog.Title>
+                    <div className="flex items-center gap-2 border-b border-border/70 px-3 py-3">
+                        {path.length > 0 ? (
+                            <Button
+                                variant="ghost"
+                                size="icon-lg"
+                                className="size-10 rounded-full"
+                                aria-label={tMenu("back")}
+                                onClick={() => popTo(path.length - 1)}
+                            >
+                                <ArrowLeft className="rtl:-scale-x-100" />
+                            </Button>
+                        ) : null}
+                        <Dialog.Title className="flex-1 truncate ps-1 font-display text-lg font-semibold">
+                            {current?.name ?? t("nav.categories")}
+                        </Dialog.Title>
                         <Dialog.Close asChild>
                             <Button variant="ghost" size="icon-lg" className="size-10 rounded-full" aria-label={tCommon("close")}>
                                 <X />
@@ -88,7 +63,26 @@ export function CategoriesSheet() {
                     </div>
                     <Dialog.Description className="sr-only">{t("nav.categoriesDescription")}</Dialog.Description>
 
-                    <div className="flex-1 overflow-y-auto">{body}</div>
+                    <div className="flex-1 overflow-y-auto p-4">
+                        {isReady ? (
+                            <CategoryPanel
+                                path={path}
+                                items={current?.children ?? roots}
+                                layout="list"
+                                rootLabel={t("nav.categories")}
+                                onCrumbSelect={popTo}
+                                onDrill={drill}
+                                onNavigate={() => handleOpenChange(false)}
+                            />
+                        ) : (
+                            <CategoryQueryState
+                                isPending={isPending}
+                                isError={isError}
+                                error={error}
+                                onRetry={() => void refetch()}
+                            />
+                        )}
+                    </div>
                 </Dialog.Content>
             </Dialog.Portal>
         </Dialog.Root>
