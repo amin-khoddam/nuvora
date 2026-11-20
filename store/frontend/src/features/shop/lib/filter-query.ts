@@ -1,4 +1,5 @@
-import type { CategoryFilter } from "../types";
+import { formatPrice } from "./format";
+import type { CategoryFilter, CurrencyCode, RangeFilter } from "../types";
 
 export type SearchParamsRecord = Record<string, string | string[] | undefined>;
 
@@ -12,6 +13,8 @@ export interface ActiveFilter {
     key: string;
     filterLabel: string;
     valueLabel: string;
+    /** Valid values taken from the URL; a range is a single `from-to` string. */
+    values: string[];
 }
 
 const RANGE_PATTERN = /^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)$/;
@@ -21,11 +24,23 @@ function toArray(value: string | string[] | undefined): string[] {
     return Array.isArray(value) ? value : [value];
 }
 
+export function toURLSearchParams(search: SearchParamsRecord): URLSearchParams {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(search)) {
+        for (const item of toArray(value)) params.append(key, item);
+    }
+    return params;
+}
+
+export function readParam(search: SearchParamsRecord, key: string): string | null {
+    return toArray(search[key])[0] ?? null;
+}
+
 export function formatRangeValue(from: number, to: number): string {
     return `${from}-${to}`;
 }
 
-function parseRange(value: string | undefined): { from: number; to: number } | null {
+export function parseRangeValue(value: string | null | undefined): { from: number; to: number } | null {
     const match = value ? RANGE_PATTERN.exec(value) : null;
     if (!match) return null;
 
@@ -34,12 +49,21 @@ function parseRange(value: string | undefined): { from: number; to: number } | n
     return from <= to ? { from, to } : null;
 }
 
+export function formatFilterNumber(filter: RangeFilter, amount: number, currency: CurrencyCode): string {
+    if (filter.valueType === "currency") return formatPrice(amount, currency);
+    return filter.unit ? `${amount} ${filter.unit}` : String(amount);
+}
+
+export function formatRangeLabel(filter: RangeFilter, from: number, to: number, currency: CurrencyCode): string {
+    return `${formatFilterNumber(filter, from, currency)} – ${formatFilterNumber(filter, to, currency)}`;
+}
+
 export function buildFilterHref(basePath: string, key: string, value: string): string {
     return `${basePath}?${new URLSearchParams({ [key]: value }).toString()}`;
 }
 
 /** Every link a filter offers, e.g. each brand or each price preset. */
-export function getFilterLinks(filter: CategoryFilter, basePath: string): FilterLink[] {
+export function getFilterLinks(filter: CategoryFilter, basePath: string, currency: CurrencyCode): FilterLink[] {
     switch (filter.type) {
         case "select":
         case "multiselect":
@@ -51,7 +75,11 @@ export function getFilterLinks(filter: CategoryFilter, basePath: string): Filter
         case "range":
             return filter.presets.map((preset) => {
                 const value = formatRangeValue(preset.from, preset.to);
-                return { value, label: preset.label, href: buildFilterHref(basePath, filter.key, value) };
+                return {
+                    value,
+                    label: formatRangeLabel(filter, preset.from, preset.to, currency),
+                    href: buildFilterHref(basePath, filter.key, value),
+                };
             });
     }
 }
@@ -60,6 +88,7 @@ export function getFilterLinks(filter: CategoryFilter, basePath: string): Filter
 export function parseActiveFilters(
     filters: readonly CategoryFilter[],
     search: SearchParamsRecord,
+    currency: CurrencyCode,
 ): ActiveFilter[] {
     return filters.flatMap((filter): ActiveFilter[] => {
         const values = toArray(search[filter.key]);
@@ -67,19 +96,34 @@ export function parseActiveFilters(
         switch (filter.type) {
             case "select": {
                 const option = filter.options.find((item) => item.value === values[0]);
-                return option ? [{ key: filter.key, filterLabel: filter.label, valueLabel: option.label }] : [];
+                return option
+                    ? [{ key: filter.key, filterLabel: filter.label, valueLabel: option.label, values: [option.value] }]
+                    : [];
             }
             case "multiselect": {
-                const labels = filter.options.filter((item) => values.includes(item.value)).map((item) => item.label);
-                return labels.length > 0
-                    ? [{ key: filter.key, filterLabel: filter.label, valueLabel: labels.join(", ") }]
+                const selected = filter.options.filter((item) => values.includes(item.value));
+                return selected.length > 0
+                    ? [
+                        {
+                            key: filter.key,
+                            filterLabel: filter.label,
+                            valueLabel: selected.map((item) => item.label).join(", "),
+                            values: selected.map((item) => item.value),
+                        },
+                    ]
                     : [];
             }
             case "range": {
-                const range = parseRange(values[0]);
+                const range = parseRangeValue(values[0]);
                 if (!range) return [];
-                const unit = filter.unit ? ` ${filter.unit}` : "";
-                return [{ key: filter.key, filterLabel: filter.label, valueLabel: `${range.from}–${range.to}${unit}` }];
+                return [
+                    {
+                        key: filter.key,
+                        filterLabel: filter.label,
+                        valueLabel: formatRangeLabel(filter, range.from, range.to, currency),
+                        values: [formatRangeValue(range.from, range.to)],
+                    },
+                ];
             }
         }
     });

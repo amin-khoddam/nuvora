@@ -51,3 +51,8 @@ export function getEffectiveFilters(path: readonly Category[]): CategoryFilter[]
 export function getCategoryHref(path: readonly Category[]): string {
     return path.length === 0 ? shopRoutes.shop : shopRoutes.category(path.map((category) => category.slug));
 }
+
+/** The category's own id plus the ids of every descendant. */
+export function collectCategoryIds(category: Category): string[] {
+    return [category.id, ...category.children.flatMap(collectCategoryIds)];
+}

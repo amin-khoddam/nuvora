@@ -3,9 +3,10 @@ import { apiConfig } from "@/config/api";
 import { toApiError } from "./errors";
 
 export const apiClient = axios.create({
-  baseURL: apiConfig.baseUrl,
-  timeout: apiConfig.timeoutMs,
-  headers: { Accept: "application/json" },
+    baseURL: apiConfig.baseUrl,
+    timeout: apiConfig.timeoutMs,
+    headers: { Accept: "application/json" },
+    paramsSerializer: { indexes: null },
 });
 
 apiClient.interceptors.request.use(

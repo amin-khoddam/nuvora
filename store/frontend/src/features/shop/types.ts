@@ -6,6 +6,8 @@ export const SORT_OPTIONS = ["featured", "newest", "priceAsc", "priceDesc", "rat
 export type ProductSort = (typeof SORT_OPTIONS)[number];
 export const DEFAULT_SORT: ProductSort = "featured";
 
+export const CATALOG_PAGE_SIZE = 12;
+
 export function isCurrencyCode(value: string): value is CurrencyCode {
     return (CURRENCIES as readonly string[]).includes(value);
 }
@@ -42,7 +44,6 @@ export interface MultiSelectFilter extends FilterBase {
 }
 
 export interface RangePreset {
-    label: string;
     from: number;
     to: number;
 }
@@ -53,6 +54,11 @@ export interface RangeFilter extends FilterBase {
     min: number;
     max: number;
     step: number;
+    /**
+     * `currency`: bounds are money already expressed in the requested currency,
+     * and the UI formats them with it. `number`: plain numbers shown with `unit`.
+     */
+    valueType: "currency" | "number";
     unit: string | null;
     presets: RangePreset[];
 }
@@ -98,27 +104,15 @@ export interface ProductSpec {
     value: string;
 }
 
-/** Price and stock of one purchasable combination, in the product's currency. */
-export interface VariantOffer {
-    price: number;
-    compareAtPrice: number | null;
-    stock: number;
-}
-
-export interface ProductSize extends VariantOffer {
-    id: string;
-    label: string;
-}
-
+/** Price and stock live on the color, in the product's currency. */
 export interface ProductColor {
     id: string;
     name: string;
     /** CSS color, e.g. `#1c1c1e`. */
     hex: string;
-    /** Used only when the color has no sizes. */
-    offer: VariantOffer | null;
-    /** Empty when this color is not sold in sizes. */
-    sizes: ProductSize[];
+    price: number;
+    compareAtPrice: number | null;
+    stock: number;
 }
 
 export interface ProductSeller {
@@ -150,9 +144,16 @@ export interface HeroSlide {
     imageAlt: string;
 }
 
+/* --------------------------------- API ---------------------------------- */
+
 export interface ApiListResponse<T> {
     data: T[];
     meta: { total: number };
+}
+
+export interface ApiPagedResponse<T> {
+    data: T[];
+    meta: { total: number; page: number; pageSize: number; totalPages: number };
 }
 
 export interface ApiItemResponse<T> {
@@ -166,4 +167,30 @@ export interface ProductsQuery {
     category: string | null;
     currency: CurrencyCode;
     limit?: number;
+}
+
+/** Product listing: category page and search. The page number is passed separately. */
+export interface CatalogQuery {
+    /** Slug chain joined with "/", e.g. `smartphone/apple`; null for all products. */
+    category: string | null;
+    q: string | null;
+    sort: ProductSort;
+    currency: CurrencyCode;
+    /** Filter key → selected values (a range is one `from-to` string). */
+    filters: Record<string, string[]>;
+    pageSize: number;
+}
+
+export interface CategorySuggestion {
+    id: string;
+    name: string;
+    /** Slug chain from the root, used to build the URL. */
+    path: string[];
+    /** Names of the ancestors, for context in the dropdown. */
+    trail: string[];
+}
+
+export interface SearchSuggestions {
+    categories: CategorySuggestion[];
+    products: Product[];
 }

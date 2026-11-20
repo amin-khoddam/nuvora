@@ -1,15 +1,25 @@
 import { apiConfig } from "@/config/api";
 import { apiClient } from "@/lib/api/client";
-import { getMockCategories, getMockHeroSlides, getMockProduct, getMockProducts } from "./mock-handlers";
+import {
+    getMockCatalog,
+    getMockCategories,
+    getMockHeroSlides,
+    getMockProduct,
+    getMockProducts,
+    getMockSuggestions,
+} from "./mock-handlers";
 import type {
     ApiItemResponse,
     ApiListResponse,
+    ApiPagedResponse,
+    CatalogQuery,
     Category,
     CurrencyCode,
     HeroSlide,
     Product,
     ProductDetail,
     ProductsQuery,
+    SearchSuggestions,
 } from "../types";
 
 const ENDPOINTS = {
@@ -17,6 +27,8 @@ const ENDPOINTS = {
     heroSlides: "/shop/hero-slides",
     products: "/shop/products",
     product: (slug: string) => `/shop/products/${encodeURIComponent(slug)}`,
+    catalog: "/shop/catalog",
+    suggestions: "/shop/search/suggestions",
 } as const;
 
 /** Endpoint that exists on the fake API used while mocking. */
@@ -43,8 +55,11 @@ async function request<T>(
 }
 
 export const shopService = {
-    getCategories: (signal?: AbortSignal) =>
-        request<ApiListResponse<Category>>(ENDPOINTS.categories, getMockCategories, { signal }),
+    getCategories: (currency: CurrencyCode, signal?: AbortSignal) =>
+        request<ApiListResponse<Category>>(ENDPOINTS.categories, () => getMockCategories(currency), {
+            params: { currency },
+            signal,
+        }),
 
     getHeroSlides: (signal?: AbortSignal) =>
         request<ApiListResponse<HeroSlide>>(ENDPOINTS.heroSlides, getMockHeroSlides, { signal }),
@@ -60,4 +75,26 @@ export const shopService = {
             params: { currency },
             signal,
         }),
+
+    /** Filters are sent as top-level parameters: `?brand=a&brand=b&price=100-500`. */
+    getCatalog: (query: CatalogQuery, page: number, signal?: AbortSignal) =>
+        request<ApiPagedResponse<Product>>(ENDPOINTS.catalog, () => getMockCatalog(query, page), {
+            params: {
+                ...query.filters,
+                category: query.category,
+                q: query.q,
+                sort: query.sort,
+                currency: query.currency,
+                pageSize: query.pageSize,
+                page,
+            },
+            signal,
+        }),
+
+    getSuggestions: (term: string, currency: CurrencyCode, signal?: AbortSignal) =>
+        request<ApiItemResponse<SearchSuggestions>>(
+            ENDPOINTS.suggestions,
+            () => getMockSuggestions(term, currency),
+            { params: { q: term, currency }, signal },
+        ),
 };

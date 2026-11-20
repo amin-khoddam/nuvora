@@ -23,39 +23,41 @@ const yearFilter: CategoryFilter = {
     ]),
 };
 
+/** Bounds are in USD here; the mock handler converts them to the requested currency. */
 const priceFilter: CategoryFilter = {
     key: "price",
     label: "Price",
     type: "range",
     min: 0,
-    max: 2000,
+    max: 3000,
     step: 50,
-    unit: "USD",
+    valueType: "currency",
+    unit: null,
     presets: [
-        { label: "Under $250", from: 0, to: 250 },
-        { label: "$250 – $500", from: 250, to: 500 },
-        { label: "$500 – $1,000", from: 500, to: 1000 },
-        { label: "Over $1,000", from: 1000, to: 2000 },
+        { from: 0, to: 250 },
+        { from: 250, to: 500 },
+        { from: 500, to: 1000 },
+        { from: 1000, to: 3000 },
     ],
 };
 
 interface CategoryInit {
     children?: Category[];
     filters?: CategoryFilter[];
-    withImage?: boolean;
 }
 
-const category = (
-    id: string,
-    slug: string,
-    name: string,
-    { children = [], filters = [], withImage = false }: CategoryInit = {},
-): Category => ({ id, slug, name, image: withImage ? image(160, 160, name) : null, filters, children });
+const category = (id: string, slug: string, name: string, { children = [], filters = [] }: CategoryInit = {}): Category => ({
+    id,
+    slug,
+    name,
+    image: image(160, 160, name),
+    filters,
+    children,
+});
 
 /** Ids are opaque; slugs form the URL: /shop/smartphone/apple/iphone/iphone-17 */
 export const MOCK_CATEGORIES: Category[] = [
     category("audio", "audio", "Audio", {
-        withImage: true,
         filters: [
             brandFilter([
                 ["sony", "Sony"],
@@ -94,7 +96,6 @@ export const MOCK_CATEGORIES: Category[] = [
         ],
     }),
     category("smartwatches", "smartwatch", "Smartwatches", {
-        withImage: true,
         filters: [
             brandFilter([
                 ["apple", "Apple"],
@@ -102,13 +103,9 @@ export const MOCK_CATEGORIES: Category[] = [
             ]),
             priceFilter,
         ],
-        children: [
-            category("apple-watch", "apple-watch", "Apple Watch"),
-            category("galaxy-watch", "galaxy-watch", "Galaxy Watch"),
-        ],
+        children: [category("apple-watch", "apple-watch", "Apple Watch"), category("galaxy-watch", "galaxy-watch", "Galaxy Watch")],
     }),
     category("laptops", "laptop", "Laptops", {
-        withImage: true,
         filters: [
             brandFilter([
                 ["apple", "Apple"],
@@ -121,7 +118,6 @@ export const MOCK_CATEGORIES: Category[] = [
         children: [category("macbook", "macbook", "MacBook"), category("windows-laptops", "windows", "Windows laptops")],
     }),
     category("smartphones", "smartphone", "Smartphones", {
-        withImage: true,
         filters: [
             brandFilter([
                 ["apple", "Apple"],
@@ -156,15 +152,12 @@ export const MOCK_CATEGORIES: Category[] = [
         ],
     }),
     category("gaming", "gaming", "Gaming", {
-        withImage: true,
         children: [category("consoles", "consoles", "Consoles"), category("controllers", "controllers", "Controllers")],
     }),
     category("accessories", "accessories", "Accessories", {
-        withImage: true,
         children: [category("chargers", "chargers", "Chargers"), category("cases", "cases", "Cases")],
     }),
     category("cameras", "camera", "Cameras", {
-        withImage: true,
         filters: [
             brandFilter([
                 ["sony", "Sony"],
@@ -180,5 +173,5 @@ export const MOCK_CATEGORIES: Category[] = [
             category("drones", "drones", "Drones"),
         ],
     }),
-    category("smart-home", "smart-home", "Smart Home", { withImage: true }),
+    category("smart-home", "smart-home", "Smart Home"),
 ];

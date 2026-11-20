@@ -1,31 +1,21 @@
-import type { ProductColor, ProductSeller, ProductSize, StockStatus, VariantOffer } from "../types";
+import type { ProductColor, ProductSeller, StockStatus } from "../types";
 
 const LOW_STOCK_THRESHOLD = 5;
 
 export interface VariantChoice {
     sellerId: string | null;
     colorId: string | null;
-    sizeId: string | null;
 }
 
 export interface ResolvedVariant {
     seller: ProductSeller | null;
     color: ProductColor | null;
-    size: ProductSize | null;
-    /** Price and stock of the resolved combination (size, or color when it has no sizes). */
-    offer: VariantOffer | null;
     /** Stable identifier of the combination, used as part of the cart key. */
     key: string;
 }
 
-/** Offers at the deepest level of a color: its sizes, or the color itself. */
-export function getColorOffers(color: ProductColor): VariantOffer[] {
-    if (color.sizes.length > 0) return color.sizes;
-    return color.offer ? [color.offer] : [];
-}
-
 export function isColorInStock(color: ProductColor): boolean {
-    return getColorOffers(color).some((offer) => offer.stock > 0);
+    return color.stock > 0;
 }
 
 export function isSellerInStock(seller: ProductSeller): boolean {
@@ -33,11 +23,7 @@ export function isSellerInStock(seller: ProductSeller): boolean {
 }
 
 export function getSellerStartingPrice(seller: ProductSeller): number | null {
-    const prices = seller.colors
-        .flatMap(getColorOffers)
-        .filter((offer) => offer.stock > 0)
-        .map((offer) => offer.price);
-
+    const prices = seller.colors.filter(isColorInStock).map((color) => color.price);
     return prices.length > 0 ? Math.min(...prices) : null;
 }
 
@@ -51,18 +37,15 @@ function pick<T extends { id: string }>(
 }
 
 /**
- * Seller → Color → Size → Offer. A choice that no longer exists under the new
- * parent (e.g. a size after switching color) silently falls back, so the
- * result is always a valid combination.
+ * Seller → Color → Price. A color that does not exist under the newly chosen
+ * seller silently falls back, so the result is always a valid combination.
  */
 export function resolveVariant(sellers: readonly ProductSeller[], choice: VariantChoice): ResolvedVariant {
     const seller = pick(sellers, choice.sellerId, isSellerInStock);
     const color = seller ? pick(seller.colors, choice.colorId, isColorInStock) : null;
-    const size = color && color.sizes.length > 0 ? pick(color.sizes, choice.sizeId, (item) => item.stock > 0) : null;
-    const offer = size ?? color?.offer ?? null;
-    const key = [seller?.id, color?.id, size?.id].filter(Boolean).join(":");
+    const key = [seller?.id, color?.id].filter(Boolean).join(":");
 
-    return { seller, color, size, offer, key };
+    return { seller, color, key };
 }
 
 export function getStockStatus(stock: number): StockStatus {

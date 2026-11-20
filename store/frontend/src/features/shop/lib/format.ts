@@ -1,11 +1,11 @@
-import type { CurrencyCode } from "../types";
+import { DEFAULT_CURRENCY, type CurrencyCode } from "../types";
 
 /** Latin digits in every locale, as the design requires. */
 const NUMBER_LOCALE = "en-US";
 
 const compactFormatter = new Intl.NumberFormat(NUMBER_LOCALE, { notation: "compact" });
 
-export function formatPrice(amount: number, currency: CurrencyCode): string {
+export function formatPrice(amount: number, currency: CurrencyCode = DEFAULT_CURRENCY): string {
     return new Intl.NumberFormat(NUMBER_LOCALE, {
         style: "currency",
         currency,
