@@ -334,7 +334,16 @@
       "bottomNavigation": "ناوبری سریع",
       "categoriesDescription": "مرور همه‌ی دسته‌بندی‌های محصولات."
     },
-    "search": { "label": "جستجوی محصولات", "placeholder": "جستجوی محصولات..." },
+    "search": {
+      "label": "جستجوی محصولات",
+      "placeholder": "جستجوی محصولات...",
+      "submit": "جستجو",
+      "hint": "برای جستجو حداقل {count} کاراکتر بنویسید.",
+      "categories": "دسته‌بندی‌ها",
+      "products": "محصولات",
+      "noResults": "نتیجه‌ای برای «{term}» پیدا نشد.",
+      "seeAll": "مشاهده همه نتایج «{term}»"
+    },
     "hero": { "region": "پیشنهادهای ویژه", "goToSlide": "رفتن به اسلاید '{{'index'}}'" },
     "sections": {
       "categories": "خرید بر اساس دسته‌بندی",
@@ -415,12 +424,12 @@
       "specs": "مشخصات",
       "related": "ممکن است بپسندید",
       "removeFromCart": "حذف از سبد خرید",
-      "seller": "فروشنده",
       "soldBy": "فروشنده:",
       "color": "رنگ",
-      "size": "سایز",
       "from": "از",
       "unavailable": "ناموجود",
+      "sellersTitle": "فروشندگان",
+      "otherSellers": "مقایسه {count} فروشنده",
       "stock": {
         "inStock": "موجود",
         "lowStock": "تنها چند عدد باقی مانده",
@@ -439,6 +448,22 @@
       "activeFilters": "فیلترهای فعال",
       "clearFilters": "پاک کردن فیلترها",
       "placeholder": "لیست محصولات این دسته‌بندی به‌زودی اضافه می‌شود."
+    },
+    "listing": {
+      "searchTitle": "نتایج «{query}»",
+      "results": "{formatted} محصول",
+      "empty": "محصولی با این جستجو یا فیلترها پیدا نشد.",
+      "filters": "فیلترها",
+      "filtersDescription": "محصولات را بر اساس برند، قیمت و موارد دیگر محدود کنید.",
+      "showResults": "نمایش نتایج",
+      "clearAll": "پاک کردن همه",
+      "removeFilter": "حذف فیلتر: {name}",
+      "activeFilters": "فیلترهای فعال",
+      "minimum": "حداقل",
+      "maximum": "حداکثر",
+      "loadMoreError": "بارگذاری محصولات بیشتر ناموفق بود.",
+      "retry": "تلاش دوباره",
+      "end": "به انتهای لیست رسیدی."
     },
     "carousel": { "previous": "محصولات قبلی", "next": "محصولات بعدی" }
   }

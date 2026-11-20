@@ -15,6 +15,9 @@ interface ProductGalleryProps {
     alt: string;
 }
 
+/** Shared by the gallery and its loading skeleton so they always line up. */
+export const GALLERY_MAX_WIDTH_CLASS = "sm:max-w-[500px]";
+
 export function ProductGallery({ images, alt }: ProductGalleryProps) {
     const t = useTranslations("shop.detail");
     const [swiper, setSwiper] = useState<SwiperInstance | null>(null);
@@ -24,7 +27,7 @@ export function ProductGallery({ images, alt }: ProductGalleryProps) {
 
     return (
         <div className="flex min-w-0 w-full flex-col gap-3">
-            <Surface padding="none" className="min-w-0 w-full overflow-hidden sm:max-w-[500px]">
+            <Surface padding="none" className={cn("min-w-0 w-full overflow-hidden", GALLERY_MAX_WIDTH_CLASS)}>
                 <Swiper
                     className="w-full min-w-0"
                     modules={[A11y, Keyboard]}
@@ -40,7 +43,7 @@ export function ProductGallery({ images, alt }: ProductGalleryProps) {
                                     alt={index === 0 ? alt : `${alt} (${index + 1})`}
                                     fill
                                     priority={index === 0}
-                                    sizes="(min-width: 1024px) 40vw, 100vw"
+                                    sizes="(min-width: 1024px) 40vw, (min-width: 640px) 500px, 100vw"
                                     className="object-contain p-6"
                                 />
                             </div>

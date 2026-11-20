@@ -337,7 +337,16 @@
       "bottomNavigation": "Quick navigation",
       "categoriesDescription": "Browse all product categories."
     },
-    "search": { "label": "Search products", "placeholder": "Search products..." },
+    "search": {
+      "label": "Search products",
+      "placeholder": "Search products...",
+      "submit": "Search",
+      "hint": "Type at least {count} characters to search.",
+      "categories": "Categories",
+      "products": "Products",
+      "noResults": "No results for “{term}”.",
+      "seeAll": "See all results for “{term}”"
+    },
     "hero": { "region": "Featured promotions", "goToSlide": "Go to slide '{{'index'}}'" },
     "sections": {
       "categories": "Shop by Category",
@@ -418,12 +427,12 @@
       "specs": "Specifications",
       "related": "You May Also Like",
       "removeFromCart": "Remove from cart",
-      "seller": "Seller",
       "soldBy": "Sold by",
       "color": "Color",
-      "size": "Size",
       "from": "from",
       "unavailable": "Unavailable",
+      "sellersTitle": "Sellers",
+      "otherSellers": "Compare {count} sellers",
       "stock": {
         "inStock": "In stock",
         "lowStock": "Only a few left",
@@ -442,6 +451,22 @@
       "activeFilters": "Active filters",
       "clearFilters": "Clear filters",
       "placeholder": "The product list for this category is coming soon."
+    },
+    "listing": {
+      "searchTitle": "Results for “{query}”",
+      "results": "{count, plural, one {{formatted} product} other {{formatted} products}}",
+      "empty": "No products match your search or filters.",
+      "filters": "Filters",
+      "filtersDescription": "Narrow the products by brand, price and more.",
+      "showResults": "Show results",
+      "clearAll": "Clear all",
+      "removeFilter": "Remove filter: {name}",
+      "activeFilters": "Active filters",
+      "minimum": "Minimum",
+      "maximum": "Maximum",
+      "loadMoreError": "Couldn't load more products.",
+      "retry": "Try again",
+      "end": "You've reached the end."
     },
     "carousel": { "previous": "Previous products", "next": "Next products" }
   }

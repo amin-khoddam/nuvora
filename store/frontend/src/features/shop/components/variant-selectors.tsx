@@ -1,42 +1,32 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "../lib/format";
 import { getSellerStartingPrice, isColorInStock } from "../lib/variants";
-import type { CurrencyCode, ProductColor, ProductSeller, ProductSize } from "../types";
+import type { CurrencyCode, ProductColor, ProductSeller } from "../types";
 
 const optionClassName =
     "outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-40";
 
-function OptionGroup({ label, value, children }: { label: string; value?: string; children: ReactNode }) {
-    return (
-        <div role="group" aria-label={label} className="flex flex-col gap-2.5">
-            <p className="text-sm font-medium">
-                {label}
-                {value ? <span className="ms-1.5 font-normal text-muted-foreground">{value}</span> : null}
-            </p>
-            {children}
-        </div>
-    );
-}
-
-interface SellerPickerProps {
+interface SellerSectionProps {
     sellers: ProductSeller[];
     selectedId: string | undefined;
     currency: CurrencyCode;
     onSelect: (sellerId: string) => void;
 }
 
-/** Rendered only when a product has more than one seller. */
-export function SellerPicker({ sellers, selectedId, currency, onSelect }: SellerPickerProps) {
+/** Placed above the specifications; rendered only when a product has more than one seller. */
+export function SellerSection({ sellers, selectedId, currency, onSelect }: SellerSectionProps) {
     const t = useTranslations("shop.detail");
 
     return (
-        <OptionGroup label={t("seller")}>
-            <ul className="flex flex-col gap-2">
+        <section id="sellers" aria-labelledby="sellers-title">
+            <h2 id="sellers-title" className="mb-4 font-display text-xl font-semibold sm:text-2xl">
+                {t("sellersTitle")}
+            </h2>
+            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {sellers.map((seller) => {
                     const isSelected = seller.id === selectedId;
                     const startingPrice = getSellerStartingPrice(seller);
@@ -50,11 +40,11 @@ export function SellerPicker({ sellers, selectedId, currency, onSelect }: Seller
                                 onClick={() => onSelect(seller.id)}
                                 className={cn(
                                     optionClassName,
-                                    "flex w-full items-center justify-between gap-3 rounded-xl border p-3 text-start text-sm",
+                                    "flex h-full w-full items-center justify-between gap-3 rounded-2xl border p-4 text-start text-sm",
                                     isSelected ? "border-brand bg-brand/5" : "border-border/70 hover:border-brand/40",
                                 )}
                             >
-                <span className="flex flex-col gap-0.5">
+                <span className="flex flex-col gap-1">
                   <span className="font-medium">{seller.name}</span>
                     {seller.rating !== null ? (
                         <span className="tabular-amount flex items-center gap-1 text-xs text-muted-foreground">
@@ -80,7 +70,7 @@ export function SellerPicker({ sellers, selectedId, currency, onSelect }: Seller
                     );
                 })}
             </ul>
-        </OptionGroup>
+        </section>
     );
 }
 
@@ -95,7 +85,11 @@ export function ColorPicker({ colors, selectedId, onSelect }: ColorPickerProps) 
     const selected = colors.find((color) => color.id === selectedId);
 
     return (
-        <OptionGroup label={t("color")} value={selected?.name}>
+        <div role="group" aria-label={t("color")} className="flex flex-col gap-2.5">
+            <p className="text-sm font-medium">
+                {t("color")}
+                {selected ? <span className="ms-1.5 font-normal text-muted-foreground">{selected.name}</span> : null}
+            </p>
             <ul className="flex flex-wrap gap-2">
                 {colors.map((color) => {
                     const isSelected = color.id === selectedId;
@@ -124,46 +118,6 @@ export function ColorPicker({ colors, selectedId, onSelect }: ColorPickerProps) 
                     );
                 })}
             </ul>
-        </OptionGroup>
-    );
-}
-
-interface SizePickerProps {
-    sizes: ProductSize[];
-    selectedId: string | undefined;
-    onSelect: (sizeId: string) => void;
-}
-
-/** Rendered only when the selected color has sizes. */
-export function SizePicker({ sizes, selectedId, onSelect }: SizePickerProps) {
-    const t = useTranslations("shop.detail");
-    const selected = sizes.find((size) => size.id === selectedId);
-
-    return (
-        <OptionGroup label={t("size")} value={selected?.label}>
-            <ul className="flex flex-wrap gap-2">
-                {sizes.map((size) => {
-                    const isSelected = size.id === selectedId;
-
-                    return (
-                        <li key={size.id}>
-                            <button
-                                type="button"
-                                aria-pressed={isSelected}
-                                disabled={size.stock <= 0}
-                                onClick={() => onSelect(size.id)}
-                                className={cn(
-                                    optionClassName,
-                                    "min-w-14 rounded-xl border px-3 py-2 text-sm font-medium disabled:line-through",
-                                    isSelected ? "border-brand bg-brand/5 text-brand" : "border-border/70 hover:border-brand/40",
-                                )}
-                            >
-                                {size.label}
-                            </button>
-                        </li>
-                    );
-                })}
-            </ul>
-        </OptionGroup>
+        </div>
     );
 }

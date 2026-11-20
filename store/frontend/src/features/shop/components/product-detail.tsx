@@ -10,8 +10,8 @@ import { siteConfig } from "@/config/site";
 import { Link } from "@/i18n/navigation";
 import { isNotFoundError } from "@/lib/api/errors";
 import { cn } from "@/lib/utils";
-import { useVariantSelection } from "../hooks/use-variant-selection";
 import { useCategories, useProduct } from "../hooks/use-shop-queries";
+import { useVariantSelection } from "../hooks/use-variant-selection";
 import { findPathById, getCategoryHref } from "../lib/category-tree";
 import { formatCompactNumber, formatPrice } from "../lib/format";
 import { getDiscountPercent, getStockStatus } from "../lib/variants";
@@ -19,11 +19,11 @@ import { useShopStore } from "../store/shop-store";
 import type { ProductDetail as ProductDetailData, StockStatus } from "../types";
 import { Breadcrumbs, type BreadcrumbItem } from "./breadcrumbs";
 import { ProductActions } from "./product-actions";
-import { ProductGallery } from "./product-gallery";
+import { GALLERY_MAX_WIDTH_CLASS, ProductGallery } from "./product-gallery";
 import { ProductSection } from "./product-section";
 import { ProductSpecs } from "./product-specs";
 import { QueryError } from "./query-feedback";
-import { ColorPicker, SellerPicker, SizePicker } from "./variant-selectors";
+import { ColorPicker, SellerSection } from "./variant-selectors";
 
 const STOCK_CLASS_NAMES: Record<StockStatus, string> = {
     inStock: "text-success",
@@ -34,7 +34,14 @@ const STOCK_CLASS_NAMES: Record<StockStatus, string> = {
 function ProductDetailSkeleton() {
     return (
         <div aria-hidden className="grid gap-6 lg:grid-cols-2 lg:gap-10">
-            <Skeleton className="aspect-square rounded-2xl sm:max-w-[500px]" />
+            <div className="flex flex-col gap-3">
+                <Skeleton className={cn("aspect-square rounded-2xl", GALLERY_MAX_WIDTH_CLASS)} />
+                <div className={cn("flex gap-2", GALLERY_MAX_WIDTH_CLASS)}>
+                    {Array.from({ length: 4 }, (_, index) => (
+                        <Skeleton key={index} className="size-16 shrink-0 rounded-xl sm:size-20" />
+                    ))}
+                </div>
+            </div>
             <div className="flex flex-col gap-4">
                 <Skeleton className="h-6 w-1/3" />
                 <Skeleton className="h-10 w-3/4" />
@@ -59,18 +66,19 @@ function ProductNotFound() {
     );
 }
 
-/** Mounted per product (`key`), so the seller/color/size choice resets on navigation. */
+/** Mounted per product (`key`), so the seller and color choice reset on navigation. */
 function ProductView({ product }: { product: ProductDetailData }) {
     const t = useTranslations("shop");
     const { data: categories = [] } = useCategories();
-    const { variant, selectSeller, selectColor, selectSize } = useVariantSelection(product.sellers);
-    const { seller, color, size, offer } = variant;
+    const { variant, selectSeller, selectColor } = useVariantSelection(product.sellers);
+    const { seller, color } = variant;
 
-    const price = offer?.price ?? product.price;
-    const compareAtPrice = offer ? offer.compareAtPrice : product.compareAtPrice;
+    const price = color?.price ?? product.price;
+    const compareAtPrice = color ? color.compareAtPrice : product.compareAtPrice;
     const discountPercent = getDiscountPercent(price, compareAtPrice);
-    const stock = offer?.stock ?? 0;
+    const stock = color?.stock ?? 0;
     const stockStatus = getStockStatus(stock);
+    const hasMultipleSellers = product.sellers.length > 1;
 
     const categoryPath = findPathById(categories, product.categoryId) ?? [];
     const breadcrumbs: BreadcrumbItem[] = [
@@ -120,26 +128,25 @@ function ProductView({ product }: { product: ProductDetailData }) {
                         {t(`detail.stock.${stockStatus}`)}
                     </p>
 
-                    <div className="flex flex-col gap-5 border-t border-border/70 pt-5">
-                        {product.sellers.length > 1 ? (
-                            <SellerPicker
-                                sellers={product.sellers}
-                                selectedId={seller?.id}
-                                currency={product.currency}
-                                onSelect={selectSeller}
-                            />
-                        ) : seller ? (
-                            <p className="text-sm text-muted-foreground">
-                                {t("detail.soldBy")} <span className="font-medium text-foreground">{seller.name}</span>
-                            </p>
-                        ) : null}
+                    {seller ? (
+                        <p className="text-sm text-muted-foreground">
+                            {t("detail.soldBy")} <span className="font-medium text-foreground">{seller.name}</span>
+                            {hasMultipleSellers ? (
+                                <>
+                                    {" · "}
+                                    <a href="#sellers" className="text-brand underline-offset-4 hover:underline">
+                                        {t("detail.otherSellers", { count: product.sellers.length })}
+                                    </a>
+                                </>
+                            ) : null}
+                        </p>
+                    ) : null}
 
-                        {seller ? <ColorPicker colors={seller.colors} selectedId={color?.id} onSelect={selectColor} /> : null}
-
-                        {color && color.sizes.length > 0 ? (
-                            <SizePicker sizes={color.sizes} selectedId={size?.id} onSelect={selectSize} />
-                        ) : null}
-                    </div>
+                    {seller ? (
+                        <div className="border-t border-border/70 pt-5">
+                            <ColorPicker colors={seller.colors} selectedId={color?.id} onSelect={selectColor} />
+                        </div>
+                    ) : null}
 
                     <ProductActions productId={product.id} cartKey={`${product.id}:${variant.key}`} stock={stock} />
 
@@ -159,6 +166,15 @@ function ProductView({ product }: { product: ProductDetailData }) {
                     </div>
                 </div>
             </div>
+
+            {hasMultipleSellers ? (
+                <SellerSection
+                    sellers={product.sellers}
+                    selectedId={seller?.id}
+                    currency={product.currency}
+                    onSelect={selectSeller}
+                />
+            ) : null}
 
             <ProductSpecs specs={product.specs} />
 
