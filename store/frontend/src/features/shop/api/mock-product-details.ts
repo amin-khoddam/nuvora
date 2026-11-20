@@ -1,11 +1,10 @@
-import type { ProductSpec, StockStatus } from "../types";
+import type { ProductSpec } from "../types";
 
 interface ProductDetailExtras {
     description: string;
     gallery: string[];
     highlights: string[];
     specs: ProductSpec[];
-    stockStatus: StockStatus;
 }
 
 const gallery = (name: string): string[] =>
@@ -26,7 +25,6 @@ export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetailExtras> = {
             { label: "Connectivity", value: "Bluetooth 5.3" },
             { label: "Charging", value: "USB-C, MagSafe, Qi" },
         ],
-        stockStatus: "inStock",
     },
     "ps5-slim": {
         description:
@@ -39,7 +37,6 @@ export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetailExtras> = {
             { label: "Optical drive", value: "Ultra HD Blu-ray" },
             { label: "Ports", value: "HDMI 2.1, USB-C, USB-A" },
         ],
-        stockStatus: "lowStock",
     },
     "apple-watch-10": {
         description:
@@ -52,7 +49,6 @@ export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetailExtras> = {
             { label: "Sensors", value: "ECG, blood oxygen, temperature" },
             { label: "Case", value: "Aluminium, 42 / 46 mm" },
         ],
-        stockStatus: "inStock",
     },
     "macbook-air-m4": {
         description:
@@ -65,7 +61,6 @@ export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetailExtras> = {
             { label: "Storage", value: "256 GB SSD" },
             { label: "Weight", value: "1.24 kg" },
         ],
-        stockStatus: "inStock",
     },
     "iphone-16": {
         description:
@@ -78,7 +73,6 @@ export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetailExtras> = {
             { label: "Storage", value: "128 GB" },
             { label: "Connector", value: "USB-C" },
         ],
-        stockStatus: "inStock",
     },
     "galaxy-s25": {
         description:
@@ -91,7 +85,6 @@ export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetailExtras> = {
             { label: "Storage", value: "256 GB" },
             { label: "Battery", value: "4000 mAh" },
         ],
-        stockStatus: "inStock",
     },
     "sony-wh-1000xm6": {
         description:
@@ -104,7 +97,6 @@ export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetailExtras> = {
             { label: "Connectivity", value: "Bluetooth 5.3, 3.5 mm" },
             { label: "Weight", value: "254 g" },
         ],
-        stockStatus: "lowStock",
     },
     "dji-mini-4-pro": {
         description:
@@ -117,6 +109,5 @@ export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetailExtras> = {
             { label: "Range", value: "20 km (FCC)" },
             { label: "Weight", value: "< 249 g" },
         ],
-        stockStatus: "outOfStock",
     },
 };

@@ -1,6 +1,8 @@
 import { ApiError } from "@/lib/api/errors";
-import { MOCK_CATEGORIES, MOCK_HERO_SLIDES, MOCK_PRODUCTS } from "./mock-data";
+import { MOCK_CATEGORIES } from "./mock-categories";
+import { MOCK_HERO_SLIDES, MOCK_PRODUCTS } from "./mock-data";
 import { MOCK_PRODUCT_DETAILS } from "./mock-product-details";
+import { MOCK_PRODUCT_SELLERS } from "./mock-product-variants";
 import type {
     ApiItemResponse,
     ApiListResponse,
@@ -9,8 +11,10 @@ import type {
     HeroSlide,
     Product,
     ProductDetail,
+    ProductSeller,
     ProductSort,
     ProductsQuery,
+    VariantOffer,
 } from "../types";
 
 /** Stand-in for what the backend does when asked for prices in another currency. */
@@ -23,6 +27,8 @@ const COMPARATORS: Record<ProductSort, (a: Product, b: Product) => number> = {
     priceDesc: (a, b) => b.price - a.price,
     rating: (a, b) => b.rating - a.rating,
 };
+
+type DetailExtras = Pick<ProductDetail, "description" | "gallery" | "highlights" | "specs">;
 
 function convert(usdAmount: number, currency: CurrencyCode): number {
     return Math.round(usdAmount * EXCHANGE_RATES[currency] * 100) / 100;
@@ -37,12 +43,31 @@ function localize(product: Product, currency: CurrencyCode): Product {
     };
 }
 
+function localizeOffer<T extends VariantOffer>(variantOffer: T, currency: CurrencyCode): T {
+    return {
+        ...variantOffer,
+        price: convert(variantOffer.price, currency),
+        compareAtPrice: variantOffer.compareAtPrice === null ? null : convert(variantOffer.compareAtPrice, currency),
+    };
+}
+
+function localizeSeller(seller: ProductSeller, currency: CurrencyCode): ProductSeller {
+    return {
+        ...seller,
+        colors: seller.colors.map((color) => ({
+            ...color,
+            offer: color.offer ? localizeOffer(color.offer, currency) : null,
+            sizes: color.sizes.map((size) => localizeOffer(size, currency)),
+        })),
+    };
+}
+
 function list<T>(items: T[]): ApiListResponse<T> {
     return { data: items, meta: { total: items.length } };
 }
 
 /** Detail-only fields for products that have no hand-written entry in `mock-product-details`. */
-function buildFallbackDetails(product: Product): Omit<ProductDetail, keyof Product> {
+function buildFallbackDetails(product: Product): DetailExtras {
     return {
         description: `${product.name} from our latest tech collection, with a 1-year warranty and free returns.`,
         gallery: ["Front", "Side", "Back"].map(
@@ -53,8 +78,27 @@ function buildFallbackDetails(product: Product): Omit<ProductDetail, keyof Produ
             { label: "Warranty", value: "1 year" },
             { label: "Returns", value: "30 days" },
         ],
-        stockStatus: "inStock",
     };
+}
+
+/** One seller, one color, no sizes. */
+function buildFallbackSellers(product: Product): ProductSeller[] {
+    return [
+        {
+            id: "nuvora",
+            name: "Nuvora Official",
+            rating: 4.9,
+            colors: [
+                {
+                    id: "default",
+                    name: "Default",
+                    hex: "#52525b",
+                    offer: { price: product.price, compareAtPrice: product.compareAtPrice, stock: 20 },
+                    sizes: [],
+                },
+            ],
+        },
+    ];
 }
 
 export function getMockCategories(): ApiListResponse<Category> {
@@ -85,5 +129,9 @@ export function getMockProduct(slug: string, currency: CurrencyCode): ApiItemRes
     if (!product) throw new ApiError("Product not found", "client", 404);
 
     const extras = MOCK_PRODUCT_DETAILS[product.id] ?? buildFallbackDetails(product);
-    return { data: { ...localize(product, currency), ...extras } };
+    const sellers = (MOCK_PRODUCT_SELLERS[product.id] ?? buildFallbackSellers(product)).map((seller) =>
+        localizeSeller(seller, currency),
+    );
+
+    return { data: { ...localize(product, currency), ...extras, sellers } };
 }

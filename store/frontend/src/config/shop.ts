@@ -4,7 +4,11 @@ export const shopRoutes = {
     home: "/",
     shop: "/shop",
     categories: "/categories",
-    category: (slug: string) => `/shop?category=${encodeURIComponent(slug)}`,
+    /** Accepts one slug or the whole slug chain: `/shop/audio/headphones/gaming`. */
+    category: (path: string | readonly string[]) => {
+        const slugs = typeof path === "string" ? [path] : path;
+        return `/shop/${slugs.map(encodeURIComponent).join("/")}`;
+    },
     collection: (collection: ProductCollection) => `/shop?collection=${collection}`,
     product: (slug: string) => `/products/${encodeURIComponent(slug)}`,
 } as const;

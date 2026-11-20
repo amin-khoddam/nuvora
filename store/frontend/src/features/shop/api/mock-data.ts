@@ -1,16 +1,16 @@
-import type { Category, HeroSlide, Product, ProductCollection } from "../types";
+import type { HeroSlide, Product, ProductCollection } from "../types";
 
-const image = (width: number, height: number, text: string) =>
+export const image = (width: number, height: number, text: string) =>
     `https://placehold.co/${width}x${height}/png?text=${encodeURIComponent(text)}`;
 
 export const MOCK_HERO_SLIDES: HeroSlide[] = [
     {
-        id: "iphone-16-pro",
+        id: "iphone-16-series",
         badge: "Next-Gen Technology",
         title: "iPhone 16 Pro",
         subtitle: "More powerful. More brilliant.\nA leap ahead.",
         ctaLabel: "Shop Now",
-        ctaHref: "/shop?category=smartphones",
+        ctaHref: "/shop/smartphone",
         image: image(900, 700, "iPhone 16 Pro"),
         imageAlt: "iPhone 16 Pro",
     },
@@ -20,7 +20,7 @@ export const MOCK_HERO_SLIDES: HeroSlide[] = [
         title: "MacBook Air M4",
         subtitle: "Thin, light and ready\nfor anything.",
         ctaLabel: "Shop Now",
-        ctaHref: "/shop?category=laptops",
+        ctaHref: "/shop/laptop",
         image: image(900, 700, "MacBook Air M4"),
         imageAlt: "MacBook Air M4",
     },
@@ -30,21 +30,10 @@ export const MOCK_HERO_SLIDES: HeroSlide[] = [
         title: "PlayStation 5 Slim",
         subtitle: "Play without limits.",
         ctaLabel: "Shop Now",
-        ctaHref: "/shop?category=gaming",
+        ctaHref: "/shop/gaming",
         image: image(900, 700, "PlayStation 5 Slim"),
         imageAlt: "PlayStation 5 Slim",
     },
-];
-
-export const MOCK_CATEGORIES: Category[] = [
-    { id: "audio", slug: "audio", name: "Audio", image: image(160, 160, "Audio") },
-    { id: "smartwatches", slug: "smartwatches", name: "Smartwatches", image: image(160, 160, "Watch") },
-    { id: "laptops", slug: "laptops", name: "Laptops", image: image(160, 160, "Laptop") },
-    { id: "smartphones", slug: "smartphones", name: "Smartphones", image: image(160, 160, "Phone") },
-    { id: "gaming", slug: "gaming", name: "Gaming", image: image(160, 160, "Gaming") },
-    { id: "accessories", slug: "accessories", name: "Accessories", image: image(160, 160, "Accessory") },
-    { id: "cameras", slug: "cameras", name: "Cameras", image: image(160, 160, "Camera") },
-    { id: "smart-home", slug: "smart-home", name: "Smart Home", image: image(160, 160, "Smart Home") },
 ];
 
 /** Prices are in USD; the mock handler converts them for other currencies. */
@@ -61,7 +50,7 @@ export const MOCK_PRODUCTS: Record<ProductCollection, Product[]> = {
             currency: "USD",
             rating: 4.8,
             reviewCount: 12000,
-            categoryId: "audio",
+            categoryId: "earbuds",
             createdAt: "2025-02-10T00:00:00Z",
         },
         {
@@ -165,7 +154,7 @@ export const MOCK_PRODUCTS: Record<ProductCollection, Product[]> = {
     ],
     "new-arrivals": [
         {
-            id: "iphone-16",
+            id: "iphone-16-series",
             slug: "iphone-16",
             name: "iPhone 16",
             image: image(600, 450, "iPhone 16"),
@@ -179,7 +168,7 @@ export const MOCK_PRODUCTS: Record<ProductCollection, Product[]> = {
             createdAt: "2025-06-01T00:00:00Z",
         },
         {
-            id: "galaxy-s25",
+            id: "samsung-galaxy-s",
             slug: "samsung-galaxy-s25",
             name: "Samsung Galaxy S25",
             image: image(600, 450, "Galaxy S25"),
@@ -193,7 +182,7 @@ export const MOCK_PRODUCTS: Record<ProductCollection, Product[]> = {
             createdAt: "2025-06-10T00:00:00Z",
         },
         {
-            id: "sony-wh-1000xm6",
+            id: "headphones-noise-cancelling",
             slug: "sony-wh-1000xm6",
             name: "Sony WH-1000XM6",
             image: image(600, 450, "Sony XM6"),
