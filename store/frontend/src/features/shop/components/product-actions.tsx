@@ -5,19 +5,27 @@ import { Heart, Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { MAX_CART_QUANTITY, useShopStore } from "../store/shop-store";
-import type { ProductDetail } from "../types";
 
 const stepperButtonClassName = "size-10 rounded-full";
 
-export function ProductActions({ product }: { product: ProductDetail }) {
+interface ProductActionsProps {
+    productId: string;
+    /** One cart line per seller/color/size combination. */
+    cartKey: string;
+    /** Stock of the selected combination. */
+    stock: number;
+}
+
+export function ProductActions({ productId, cartKey, stock }: ProductActionsProps) {
     const t = useTranslations("shop");
-    const quantity = useShopStore((state) => state.cart[product.id] ?? 0);
-    const isWishlisted = useShopStore((state) => state.wishlist.includes(product.id));
+    const quantity = useShopStore((state) => state.cart[cartKey] ?? 0);
+    const isWishlisted = useShopStore((state) => state.wishlist.includes(productId));
     const toggleWishlist = useShopStore((state) => state.toggleWishlist);
     const addToCart = useShopStore((state) => state.addToCart);
     const setCartQuantity = useShopStore((state) => state.setCartQuantity);
 
-    const isOutOfStock = product.stockStatus === "outOfStock";
+    const maxQuantity = Math.min(MAX_CART_QUANTITY, stock);
+    const isOutOfStock = maxQuantity <= 0;
     const isInCart = quantity > 0;
 
     return (
@@ -34,7 +42,7 @@ export function ProductActions({ product }: { product: ProductDetail }) {
                             size="icon-lg"
                             className={cn(stepperButtonClassName, "text-destructive hover:text-destructive")}
                             aria-label={t("detail.removeFromCart")}
-                            onClick={() => setCartQuantity(product.id, 0)}
+                            onClick={() => setCartQuantity(cartKey, 0)}
                         >
                             <Trash2 />
                         </Button>
@@ -44,7 +52,7 @@ export function ProductActions({ product }: { product: ProductDetail }) {
                             size="icon-lg"
                             className={stepperButtonClassName}
                             aria-label={t("detail.decrease")}
-                            onClick={() => setCartQuantity(product.id, quantity - 1)}
+                            onClick={() => setCartQuantity(cartKey, quantity - 1)}
                         >
                             <Minus />
                         </Button>
@@ -59,8 +67,8 @@ export function ProductActions({ product }: { product: ProductDetail }) {
                         size="icon-lg"
                         className={stepperButtonClassName}
                         aria-label={t("detail.increase")}
-                        disabled={quantity >= MAX_CART_QUANTITY}
-                        onClick={() => setCartQuantity(product.id, quantity + 1)}
+                        disabled={quantity >= maxQuantity}
+                        onClick={() => setCartQuantity(cartKey, quantity + 1)}
                     >
                         <Plus />
                     </Button>
@@ -70,7 +78,7 @@ export function ProductActions({ product }: { product: ProductDetail }) {
                     size="xl"
                     className="min-w-44 flex-1 rounded-full sm:flex-none"
                     disabled={isOutOfStock}
-                    onClick={() => addToCart(product.id)}
+                    onClick={() => addToCart(cartKey)}
                 >
                     <ShoppingCart data-icon="inline-start" aria-hidden />
                     {t("product.addToCart")}
@@ -83,7 +91,7 @@ export function ProductActions({ product }: { product: ProductDetail }) {
                 className="size-11 rounded-full"
                 aria-pressed={isWishlisted}
                 aria-label={isWishlisted ? t("product.removeFromWishlist") : t("product.addToWishlist")}
-                onClick={() => toggleWishlist(product.id)}
+                onClick={() => toggleWishlist(productId)}
             >
                 <Heart className={cn(isWishlisted && "fill-destructive text-destructive")} />
             </Button>

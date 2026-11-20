@@ -418,11 +418,30 @@
       "specs": "Specifications",
       "related": "You May Also Like",
       "removeFromCart": "Remove from cart",
+      "seller": "Seller",
+      "soldBy": "Sold by",
+      "color": "Color",
+      "size": "Size",
+      "from": "from",
+      "unavailable": "Unavailable",
       "stock": {
         "inStock": "In stock",
         "lowStock": "Only a few left",
         "outOfStock": "Out of stock"
       }
+    },
+    "categoryMenu": {
+      "viewAll": "View all {name}",
+      "back": "Back",
+      "topLevel": "Top-level categories"
+    },
+    "categoryPage": {
+      "notFoundTitle": "Category not found",
+      "notFound": "This category doesn't exist or has been moved.",
+      "subcategories": "Subcategories",
+      "activeFilters": "Active filters",
+      "clearFilters": "Clear filters",
+      "placeholder": "The product list for this category is coming soon."
     },
     "carousel": { "previous": "Previous products", "next": "Next products" }
   }

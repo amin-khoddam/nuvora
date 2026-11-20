@@ -415,11 +415,30 @@
       "specs": "مشخصات",
       "related": "ممکن است بپسندید",
       "removeFromCart": "حذف از سبد خرید",
+      "seller": "فروشنده",
+      "soldBy": "فروشنده:",
+      "color": "رنگ",
+      "size": "سایز",
+      "from": "از",
+      "unavailable": "ناموجود",
       "stock": {
         "inStock": "موجود",
         "lowStock": "تنها چند عدد باقی مانده",
         "outOfStock": "ناموجود"
       }
+    },
+    "categoryMenu": {
+      "viewAll": "مشاهده همه {name}",
+      "back": "بازگشت",
+      "topLevel": "دسته‌بندی‌های اصلی"
+    },
+    "categoryPage": {
+      "notFoundTitle": "دسته‌بندی پیدا نشد",
+      "notFound": "این دسته‌بندی وجود ندارد یا جابه‌جا شده است.",
+      "subcategories": "زیردسته‌ها",
+      "activeFilters": "فیلترهای فعال",
+      "clearFilters": "پاک کردن فیلترها",
+      "placeholder": "لیست محصولات این دسته‌بندی به‌زودی اضافه می‌شود."
     },
     "carousel": { "previous": "محصولات قبلی", "next": "محصولات بعدی" }
   }
