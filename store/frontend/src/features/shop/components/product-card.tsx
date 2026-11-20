@@ -17,9 +17,11 @@ interface ProductCardProps {
     product: Product;
     /** Shows the "-15%" badge. On for Featured, off for New Arrivals. */
     showDiscountBadge?: boolean;
+    /** Loads the image eagerly. Use for cards that are above the fold (LCP candidates). */
+    isAboveFold?: boolean;
 }
 
-export function ProductCard({ product, showDiscountBadge = false }: ProductCardProps) {
+export function ProductCard({ product, showDiscountBadge = false, isAboveFold = false }: ProductCardProps) {
     const t = useTranslations("shop.product");
     const isWishlisted = useShopStore((state) => state.wishlist.includes(product.id));
     const toggleWishlist = useShopStore((state) => state.toggleWishlist);
@@ -49,7 +51,8 @@ export function ProductCard({ product, showDiscountBadge = false }: ProductCardP
                     src={product.image}
                     alt=""
                     fill
-                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    loading={isAboveFold ? "eager" : "lazy"}
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 50vw"
                     className="object-contain p-3"
                 />
             </div>

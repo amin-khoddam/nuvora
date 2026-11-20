@@ -71,9 +71,9 @@ export function CatalogList({ query }: { query: CatalogQuery }) {
         body = (
             <>
                 <ul className={cn(gridClassName, "transition-opacity", isPlaceholderData && "opacity-60")}>
-                    {products.map((product) => (
+                    {products.map((product, index) => (
                         <li key={product.id}>
-                            <ProductCard product={product} showDiscountBadge />
+                            <ProductCard product={product} showDiscountBadge isAboveFold={index < 4} />
                         </li>
                     ))}
                 </ul>
