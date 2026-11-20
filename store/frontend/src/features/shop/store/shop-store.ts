@@ -13,8 +13,9 @@ export interface ShopState {
     /** Category id, or null for all categories. */
     categoryId: string | null;
     currency: CurrencyCode;
-    wishlist: string[];
-    /** Product id → quantity. Products that are not in the cart have no entry. */
+    /** Product ids as keys: O(1) lookup in every card. */
+    wishlist: Record<string, true>;
+    /** Cart line key → quantity. Lines that are not in the cart have no entry. */
     cart: Record<string, number>;
     setSort: (sort: ProductSort) => void;
     setCategoryId: (categoryId: string | null) => void;
@@ -22,7 +23,7 @@ export interface ShopState {
     toggleWishlist: (productId: string) => void;
     /** Adds on top of the current quantity. */
     addToCart: (productId: string, quantity?: number) => void;
-    /** Sets an exact quantity; zero or less removes the product from the cart. */
+    /** Sets an exact quantity; zero or less removes the line from the cart. */
     setCartQuantity: (productId: string, quantity: number) => void;
 }
 
@@ -30,17 +31,18 @@ export const useShopStore = create<ShopState>()((set) => ({
     sort: DEFAULT_SORT,
     categoryId: null,
     currency: DEFAULT_CURRENCY,
-    wishlist: [],
+    wishlist: {},
     cart: {},
     setSort: (sort) => set({ sort }),
     setCategoryId: (categoryId) => set({ categoryId }),
     setCurrency: (currency) => set({ currency }),
     toggleWishlist: (productId) =>
-        set((state) => ({
-            wishlist: state.wishlist.includes(productId)
-                ? state.wishlist.filter((id) => id !== productId)
-                : [...state.wishlist, productId],
-        })),
+        set((state) => {
+            if (state.wishlist[productId]) {
+                return { wishlist: Object.fromEntries(Object.entries(state.wishlist).filter(([id]) => id !== productId)) };
+            }
+            return { wishlist: { ...state.wishlist, [productId]: true } };
+        }),
     addToCart: (productId, quantity = 1) =>
         set((state) => ({
             cart: {

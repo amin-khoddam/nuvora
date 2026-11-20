@@ -19,7 +19,7 @@ interface ProductActionsProps {
 export function ProductActions({ productId, cartKey, stock }: ProductActionsProps) {
     const t = useTranslations("shop");
     const quantity = useShopStore((state) => state.cart[cartKey] ?? 0);
-    const isWishlisted = useShopStore((state) => state.wishlist.includes(productId));
+    const isWishlisted = useShopStore((state) => state.wishlist[productId] === true);
     const toggleWishlist = useShopStore((state) => state.toggleWishlist);
     const addToCart = useShopStore((state) => state.addToCart);
     const setCartQuantity = useShopStore((state) => state.setCartQuantity);

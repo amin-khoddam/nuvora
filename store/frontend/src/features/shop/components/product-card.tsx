@@ -23,7 +23,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, showDiscountBadge = false, isAboveFold = false }: ProductCardProps) {
     const t = useTranslations("shop.product");
-    const isWishlisted = useShopStore((state) => state.wishlist.includes(product.id));
+    const isWishlisted = useShopStore((state) => state.wishlist[product.id] === true);
     const toggleWishlist = useShopStore((state) => state.toggleWishlist);
     const addToCart = useShopStore((state) => state.addToCart);
 
