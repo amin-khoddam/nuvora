@@ -11,6 +11,7 @@ import {
     DropdownMenuRadioItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useChangeCurrency } from "../hooks/use-change-currency";
 import { useShopStore } from "../store/shop-store";
 import { CURRENCIES, isCurrencyCode } from "../types";
 
@@ -22,7 +23,7 @@ interface CurrencyMenuProps {
 export function CurrencyMenu({ compact = false }: CurrencyMenuProps) {
     const t = useTranslations("shop");
     const currency = useShopStore((state) => state.currency);
-    const setCurrency = useShopStore((state) => state.setCurrency);
+    const changeCurrency = useChangeCurrency();
 
     return (
         <DropdownMenu>
@@ -54,7 +55,7 @@ export function CurrencyMenu({ compact = false }: CurrencyMenuProps) {
                 <DropdownMenuLabel>{t("toolbar.currency")}</DropdownMenuLabel>
                 <DropdownMenuRadioGroup
                     value={currency}
-                    onValueChange={(value) => isCurrencyCode(value) && setCurrency(value)}
+                    onValueChange={(value) => isCurrencyCode(value) && changeCurrency(value)}
                 >
                     {CURRENCIES.map((code) => (
                         <DropdownMenuRadioItem key={code} value={code}>

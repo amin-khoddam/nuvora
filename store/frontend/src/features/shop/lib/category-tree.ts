@@ -56,3 +56,20 @@ export function getCategoryHref(path: readonly Category[]): string {
 export function collectCategoryIds(category: Category): string[] {
     return [category.id, ...category.children.flatMap(collectCategoryIds)];
 }
+
+/** Keys of every range filter whose values are money (e.g. `price`), anywhere in the tree. */
+export function collectCurrencyFilterKeys(roots: readonly Category[]): string[] {
+    const keys = new Set<string>();
+
+    const visit = (nodes: readonly Category[]) => {
+        for (const node of nodes) {
+            for (const filter of node.filters) {
+                if (filter.type === "range" && filter.valueType === "currency") keys.add(filter.key);
+            }
+            visit(node.children);
+        }
+    };
+
+    visit(roots);
+    return [...keys];
+}

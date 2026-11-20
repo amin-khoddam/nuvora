@@ -64,7 +64,12 @@ export function useProduct(slug: string, currency: CurrencyCode) {
     });
 }
 
-/** Paged product list for category pages and search; pages load on demand. */
+/**
+ * Paged product list for category pages and search; pages load on demand.
+ * The previous list stays visible while sort, filters or currency change, but
+ * never across a different category or search term, where it would show
+ * unrelated products under the new heading.
+ */
 export function useCatalog(query: CatalogQuery) {
     return useInfiniteQuery({
         queryKey: shopKeys.catalog(query),
@@ -72,7 +77,11 @@ export function useCatalog(query: CatalogQuery) {
         initialPageParam: 1,
         getNextPageParam: (lastPage) =>
             lastPage.meta.page < lastPage.meta.totalPages ? lastPage.meta.page + 1 : undefined,
-        placeholderData: keepPreviousData,
+        placeholderData: (previousData, previousQuery) => {
+            const previous = previousQuery?.queryKey[2];
+            const isSameListing = previous?.category === query.category && previous?.q === query.q;
+            return isSameListing ? previousData : undefined;
+        },
         ...sharedOptions,
     });
 }
