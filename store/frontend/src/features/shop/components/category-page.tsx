@@ -8,32 +8,48 @@ import { shopRoutes } from "@/config/shop";
 import { siteConfig } from "@/config/site";
 import { Link } from "@/i18n/navigation";
 import { useCategories } from "../hooks/use-shop-queries";
+import { useListingNavigation } from "../hooks/use-listing-navigation";
 import { getCategoryHref, getEffectiveFilters, resolvePathBySlugs } from "../lib/category-tree";
-import { parseActiveFilters, type SearchParamsRecord } from "../lib/filter-query";
+import { parseActiveFilters, readParam, type SearchParamsRecord } from "../lib/filter-query";
+import { useShopStore } from "../store/shop-store";
+import { CATALOG_PAGE_SIZE, DEFAULT_SORT, isProductSort, type CatalogQuery, type ProductSort } from "../types";
+import { ActiveFilterChips } from "./active-filter-chips";
 import { Breadcrumbs, type BreadcrumbItem } from "./breadcrumbs";
-import { CategoryFilterSections, ChipLink } from "./category-filters";
-import { EmptyState, QueryError } from "./query-feedback";
+import { CatalogCount, CatalogList } from "./catalog-results";
+import { CategorySlider } from "./category-slider";
+import { FiltersSheet } from "./filters-sheet";
+import { QueryError } from "./query-feedback";
+import { SectionHeader } from "./section-header";
+import { ShopFilters } from "./shop-filters";
+import { SortMenu } from "./sort-menu";
 
 interface CategoryPageProps {
     slugs: string[];
     searchParams: SearchParamsRecord;
 }
 
+function readSort(searchParams: SearchParamsRecord): ProductSort {
+    const value = readParam(searchParams, "sort");
+    return value !== null && isProductSort(value) ? value : DEFAULT_SORT;
+}
+
 /**
- * Placeholder for `/shop/...`: resolves the slug chain against the category
- * tree and shows breadcrumb, sub-categories and the filters in the URL. The
- * product listing itself is out of scope.
+ * `/shop/...`: sub-categories, a sticky filter sidebar (a full-screen sheet
+ * below `lg`), sort, and an infinitely scrolling product list. Category,
+ * `q`, `sort` and filters all live in the URL.
  */
 export function CategoryPage({ slugs, searchParams }: CategoryPageProps) {
     const t = useTranslations("shop");
+    const currency = useShopStore((state) => state.currency);
     const { data: roots, isPending, isError, error, refetch } = useCategories();
+    const { setFilter, clearFilters, setSort } = useListingNavigation(searchParams);
 
     if (isPending) {
         return (
             <div aria-hidden className="flex flex-col gap-4">
                 <Skeleton className="h-5 w-1/2" />
                 <Skeleton className="h-10 w-1/3" />
-                <Skeleton className="h-24" />
+                <Skeleton className="h-28" />
             </div>
         );
     }
@@ -53,10 +69,22 @@ export function CategoryPage({ slugs, searchParams }: CategoryPageProps) {
     }
 
     const current = path.at(-1);
-    const children = current ? current.children : roots;
-    const basePath = getCategoryHref(path);
+    const subcategories = current ? current.children : roots;
     const filters = getEffectiveFilters(path);
-    const activeFilters = parseActiveFilters(filters, searchParams);
+    const activeFilters = parseActiveFilters(filters, searchParams, currency);
+    const activeValues = Object.fromEntries(activeFilters.map((filter) => [filter.key, filter.values]));
+    const activeKeys = activeFilters.map((filter) => filter.key);
+    const q = readParam(searchParams, "q")?.trim() || null;
+    const sort = readSort(searchParams);
+
+    const query: CatalogQuery = {
+        category: slugs.length > 0 ? slugs.join("/") : null,
+        q,
+        sort,
+        currency,
+        filters: activeValues,
+        pageSize: CATALOG_PAGE_SIZE,
+    };
 
     const breadcrumbs: BreadcrumbItem[] = [
         { label: siteConfig.name, href: shopRoutes.home },
@@ -68,43 +96,60 @@ export function CategoryPage({ slugs, searchParams }: CategoryPageProps) {
             : [{ label: t("nav.shop") }]),
     ];
 
+    const hasFilters = filters.length > 0;
+
     return (
         <div className="flex flex-col gap-6">
             <Breadcrumbs items={breadcrumbs} />
-            <h1 className="font-display text-3xl font-bold">{current?.name ?? t("nav.shop")}</h1>
+            <h1 className="font-display text-3xl font-bold text-balance">
+                {q ? t("listing.searchTitle", { query: q }) : (current?.name ?? t("nav.shop"))}
+            </h1>
 
-            {activeFilters.length > 0 ? (
-                <section aria-label={t("categoryPage.activeFilters")} className="flex flex-wrap items-center gap-2">
-                    {activeFilters.map((filter) => (
-                        <span
-                            key={filter.key}
-                            className="rounded-full bg-brand/10 px-3 py-1 text-sm font-medium text-brand"
-                        >
-              {filter.filterLabel}: {filter.valueLabel}
-            </span>
-                    ))}
-                    <Link href={basePath} className="text-sm text-muted-foreground underline-offset-4 hover:underline">
-                        {t("categoryPage.clearFilters")}
-                    </Link>
+            {subcategories.length > 0 ? (
+                <section aria-label={current ? t("categoryPage.subcategories") : t("sections.categories")}>
+                    <SectionHeader title={current ? t("categoryPage.subcategories") : t("sections.categories")} />
+                    <CategorySlider
+                        categories={subcategories}
+                        getHref={(category) => getCategoryHref([...path, category])}
+                    />
                 </section>
             ) : null}
 
-            {children.length > 0 ? (
-                <section aria-label={t("categoryPage.subcategories")}>
-                    <h2 className="mb-2 text-xs font-semibold text-muted-foreground">{t("categoryPage.subcategories")}</h2>
-                    <ul className="flex flex-wrap gap-2">
-                        {children.map((child) => (
-                            <li key={child.id}>
-                                <ChipLink href={getCategoryHref([...path, child])}>{child.name}</ChipLink>
-                            </li>
-                        ))}
-                    </ul>
-                </section>
-            ) : null}
+            <div className={hasFilters ? "grid items-start gap-6 lg:grid-cols-[17rem_minmax(0,1fr)]" : undefined}>
+                {hasFilters ? (
+                    <aside aria-label={t("listing.filters")} className="sticky top-24 hidden lg:block">
+                        <Surface className="max-h-[calc(100dvh-7.5rem)] overflow-y-auto">
+                            <ShopFilters filters={filters} values={activeValues} onChange={setFilter} />
+                        </Surface>
+                    </aside>
+                ) : null}
 
-            <CategoryFilterSections filters={filters} basePath={basePath} />
+                <div className="flex min-w-0 flex-col gap-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                        <CatalogCount query={query} />
+                        <div className="flex items-center gap-2">
+                            {hasFilters ? (
+                                <FiltersSheet
+                                    filters={filters}
+                                    values={activeValues}
+                                    activeCount={activeFilters.length}
+                                    onChange={setFilter}
+                                    onClear={() => clearFilters(activeKeys)}
+                                />
+                            ) : null}
+                            <SortMenu value={sort} onChange={setSort} />
+                        </div>
+                    </div>
 
-            <EmptyState message={t("categoryPage.placeholder")} />
+                    <ActiveFilterChips
+                        filters={activeFilters}
+                        onRemove={(key) => setFilter(key, [])}
+                        onClear={() => clearFilters(activeKeys)}
+                    />
+
+                    <CatalogList query={query} />
+                </div>
+            </div>
         </div>
     );
 }

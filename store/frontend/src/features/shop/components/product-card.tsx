@@ -66,7 +66,7 @@ export function ProductCard({ product, showDiscountBadge = false }: ProductCardP
 
             <div className="mt-1 flex items-end justify-between gap-2">
                 <div>
-                    <p className="tabular-amount flex items-baseline gap-2">
+                    <p className="tabular-amount flex flex-wrap items-baseline gap-x-2">
                         <span className="text-base font-semibold">{formatPrice(product.price, product.currency)}</span>
                         {product.compareAtPrice !== null ? (
                             <span className="text-xs text-muted-foreground line-through">
