@@ -22,7 +22,7 @@ export function SiteHeader() {
         <div className="container-page">
           <div
               className={cn(
-                  "flex items-center gap-2 rounded-full px-2 py-2 transition-[background-color,box-shadow] duration-300 sm:px-3 lg:gap-3",
+                  "flex items-center gap-2 rounded-xl px-2 py-2 transition-[background-color,box-shadow] duration-300 sm:px-3 lg:gap-3",
                   scrolled ? "glass-panel-strong" : "glass-panel",
               )}
           >
