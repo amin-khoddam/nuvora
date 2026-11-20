@@ -10,13 +10,13 @@ import "swiper/css";
 import { Surface } from "@/components/ui/surface";
 import { cn } from "@/lib/utils";
 
+/** Shared by the gallery, its thumbnails and the loading skeleton so they always line up. */
+export const GALLERY_MAX_WIDTH_CLASS = "sm:max-w-[500px]";
+
 interface ProductGalleryProps {
     images: string[];
     alt: string;
 }
-
-/** Shared by the gallery and its loading skeleton so they always line up. */
-export const GALLERY_MAX_WIDTH_CLASS = "sm:max-w-[500px]";
 
 export function ProductGallery({ images, alt }: ProductGalleryProps) {
     const t = useTranslations("shop.detail");
@@ -26,8 +26,8 @@ export function ProductGallery({ images, alt }: ProductGalleryProps) {
     if (images.length === 0) return null;
 
     return (
-        <div className="flex min-w-0 w-full flex-col gap-3">
-            <Surface padding="none" className={cn("min-w-0 w-full overflow-hidden", GALLERY_MAX_WIDTH_CLASS)}>
+        <div className="flex w-full min-w-0 flex-col gap-3">
+            <Surface padding="none" className={cn("w-full min-w-0 overflow-hidden", GALLERY_MAX_WIDTH_CLASS)}>
                 <Swiper
                     className="w-full min-w-0"
                     modules={[A11y, Keyboard]}
@@ -53,7 +53,7 @@ export function ProductGallery({ images, alt }: ProductGalleryProps) {
             </Surface>
 
             {images.length > 1 ? (
-                <ul className="flex gap-2 overflow-x-auto pb-1">
+                <ul className={cn("flex gap-2 overflow-x-auto pb-1", GALLERY_MAX_WIDTH_CLASS)}>
                     {images.map((image, index) => {
                         const isActive = index === activeIndex;
 
